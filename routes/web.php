@@ -72,7 +72,7 @@ Route::get('captcha/{config?}', '\Mews\Captcha\CaptchaController@getCaptcha');
 
 // Staff can assist raffle draws
 Route::middleware(['auth'])->group(function () {
-    Route::get('/raffle-draw', [RaffleDrawController::class, 'showDrawPage'])->name('raffle.draw');
+    Route::get('/raffle', [RaffleDrawController::class, 'showDrawPage'])->name('raffle.draw');
     Route::post('/raffle-draw/start', [RaffleDrawController::class, 'startDraw'])->name('raffle.start');
     Route::get('/raffle-draw/recent-winners', [RaffleDrawController::class, 'recentWinners'])->name('raffle.recentWinners');
     Route::get('participants/list', [RaffleDrawController::class, 'list'])

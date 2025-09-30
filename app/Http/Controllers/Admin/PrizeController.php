@@ -33,6 +33,44 @@ class PrizeController extends Controller
         return redirect()->route('admin.prizes.index')->with('success', 'Prize added successfully.');
     }
 
+    public function edit(Prize $prize)
+    {
+        if ($prize->winners()->exists()) {
+            return redirect()->route('admin.prizes.index')
+                ->with('error', 'This prize already has winners and cannot be edited.');
+        }
+
+        return view('admin.prizes.edit', compact('prize'));
+    }
+
+    public function update(Request $request, Prize $prize)
+    {
+        if ($prize->winners()->exists()) {
+            return redirect()->route('admin.prizes.index')
+                ->with('error', 'This prize already has winners and cannot be updated.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $prize->update($request->only('name', 'quantity'));
+
+        return redirect()->route('admin.prizes.index')->with('success', 'Prize updated successfully.');
+    }
+
+    public function destroy(Prize $prize)
+    {
+        if ($prize->winners()->exists()) {
+            return redirect()->route('admin.prizes.index')
+                ->with('error', 'This prize already has winners and cannot be deleted.');
+        }
+
+        $prize->delete();
+        return redirect()->route('admin.prizes.index')->with('success', 'Prize deleted successfully.');
+    }
+
     public function draw(Prize $prize)
     {
         $winnersCount = $prize->winners()->count();

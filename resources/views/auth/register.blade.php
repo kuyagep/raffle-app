@@ -76,8 +76,8 @@
                                             alt="Logo">
 
                                         <!-- System Title -->
-                                        <h1 class="h4 text-gray-900 mb-2">Teacher’s Day</h1>
-                                        <p class="mb-4">Online Registration &amp; QR Code Attendance System</p>
+                                        <h1 class="h4 text-gray-900 mb-2">Register</h1>
+                                        <p class="mb-4">Smart Raffle System</p>
                                     </div>
 
                                     <form class="user" method="POST" action="/register">
@@ -106,18 +106,18 @@
                                         </div>
                                         <div class="form-group">
                                             <input type="password" name="password"
-                                                    class="form-control form-control-user @error('password') is-invalid @enderror"
-                                                    placeholder="Password" required>
-                                                @error('password')
-                                                    <div class="invalid-feedback text-left">
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
+                                                class="form-control form-control-user @error('password') is-invalid @enderror"
+                                                placeholder="Password" required>
+                                            @error('password')
+                                                <div class="invalid-feedback text-left">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                         <div class="form-group">
                                             <input type="password" name="password_confirmation"
-                                                    class="form-control form-control-user" placeholder="Repeat Password"
-                                                    required>
+                                                class="form-control form-control-user" placeholder="Repeat Password"
+                                                required>
                                         </div>
 
 

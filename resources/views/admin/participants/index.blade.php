@@ -66,8 +66,7 @@
                             </th>
                             <th>Full Name</th>
                             <th>District/Division</th>
-                            <th>Municipality</th>
-
+                            <th>Municipality/Division</th>
                             <th>School/Office Name</th>
                             <th>Actions</th>
                         </tr>
@@ -78,7 +77,7 @@
                                 <td>
                                     <input type="checkbox" class="selectItem" value="{{ $participant->id }}">
                                 </td>
-                                 <td>{{ $participant->full_name }}</td>
+                                <td>{{ $participant->full_name }}</td>
                                 <td>{{ $participant->district_division }}</td>
                                 <td>{{ $participant->municipality }}</td>
                                 <td>{{ $participant->school_office }}</td>
@@ -275,62 +274,63 @@
     </script>
 
     <script>
-    $('#importForm').on('submit', function (e) {
-        e.preventDefault();
+        $('#importForm').on('submit', function(e) {
+            e.preventDefault();
 
-        let formData = new FormData(this);
+            let formData = new FormData(this);
 
-        $.ajax({
-            url: "{{ route('admin.participants.import') }}",
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            success: function (data) {
-                if (data.success) {
-                    // Close modal
-                    $('#importModal').modal('hide');
+            $.ajax({
+                url: "{{ route('admin.participants.import') }}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                success: function(data) {
+                    if (data.success) {
+                        // Close modal
+                        $('#importModal').modal('hide');
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Imported!',
-                        text: data.message,
-                        timer: 2000,
-                        showConfirmButton: false
-                    }).then(() => location.reload());
-                }
-            },
-            error: function (xhr) {
-                // Clear old errors
-                $('#importErrors').html('');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Imported!',
+                            text: data.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => location.reload());
+                    }
+                },
+                error: function(xhr) {
+                    // Clear old errors
+                    $('#importErrors').html('');
 
-                if (xhr.status === 422 && xhr.responseJSON?.errors) {
-                    // Validation errors
-                    let errorList = xhr.responseJSON.errors.map(err => `<li>${err}</li>`).join('');
-                    $('#importErrors').html(`
+                    if (xhr.status === 422 && xhr.responseJSON?.errors) {
+                        // Validation errors
+                        let errorList = xhr.responseJSON.errors.map(err => `<li>${err}</li>`).join('');
+                        $('#importErrors').html(`
                         <div class="alert alert-danger">
                             <ul class="mb-0">${errorList}</ul>
                         </div>
                     `);
-                } else {
-                    // Generic error
-                    Swal.fire('Error!', xhr.responseJSON?.message || 'Something went wrong while importing.', 'error');
+                    } else {
+                        // Generic error
+                        Swal.fire('Error!', xhr.responseJSON?.message ||
+                            'Something went wrong while importing.', 'error');
+                    }
                 }
-            }
+            });
         });
-    });
 
-    $('#importModal').on('hidden.bs.modal', function () {
-        // Reset form
-        $('#importForm')[0].reset();
+        $('#importModal').on('hidden.bs.modal', function() {
+            // Reset form
+            $('#importForm')[0].reset();
 
-        // Clear error messages
-        $('#importErrors').html('');
-    });
-</script>
+            // Clear error messages
+            $('#importErrors').html('');
+        });
+    </script>
 
 
 

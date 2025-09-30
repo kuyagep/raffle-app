@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher’s Day | Login</title>
+    <title>Login</title>
 
     <!-- SB Admin 2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
@@ -76,8 +76,8 @@
                                             alt="Logo">
 
                                         <!-- System Title -->
-                                        <h1 class="h4 text-gray-900 mb-2">Teacher’s Day</h1>
-                                        {{-- <p class="mb-4">Online Registration &amp; QR Code Attendance System</p> --}}
+                                        <h1 class="h4 text-gray-900 mb-2">Login to Dashboard</h1>
+                                        <p class="mb-4">Smart Raffle System</p>
                                     </div>
 
                                     <form class="user" method="POST" action="/login">
@@ -86,7 +86,7 @@
 
                                         <div class="form-group">
                                             <input type="email" name="email"
-                                                class="form-control form-control-user @error('email') is-invalid @enderror"
+                                                class="form-control form-control-lg  form-control-user @error('email') is-invalid @enderror"
                                                 placeholder="Enter Email Address..." value="{{ old('email') }}"
                                                 required>
                                             @error('email')
@@ -98,7 +98,7 @@
 
                                         <div class="form-group">
                                             <input type="password" name="password"
-                                                class="form-control form-control-user @error('password') is-invalid @enderror"
+                                                class="form-control form-control-lg  form-control-user @error('password') is-invalid @enderror"
                                                 placeholder="Password" required>
                                             @error('password')
                                                 <div class="invalid-feedback text-left">
@@ -107,7 +107,7 @@
                                             @enderror
                                         </div>
 
-                                        <button type="submit" class="btn btn-deped btn-user btn-block">
+                                        <button type="submit" class="btn btn-deped btn-lg btn-user btn-block mt-5">
                                             Login
                                         </button>
                                     </form>
