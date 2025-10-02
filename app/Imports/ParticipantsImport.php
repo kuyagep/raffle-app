@@ -8,17 +8,19 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-
-class ParticipantsImport implements ToModel, WithHeadingRow, WithValidation
+use Maatwebsite\Excel\Concerns\WithUpserts;
+use Illuminate\Support\Str;
+class ParticipantsImport implements ToModel, WithHeadingRow, WithValidation, WithUpserts
 {
     use Importable;
 
     public function model(array $row)
     {
         return new Participant([
-            'district_division' => $row['district_division'] ?? null,
-            'municipality'      => $row['municipality'] ?? null,
-            'full_name'         => $row['full_name'] ?? null,
+            'id'                => strtolower(Str::ulid()), // Generate ULID
+            'district_division' => $row['district_division'],
+            'municipality'      => $row['municipality'],
+            'full_name'         => $row['full_name'],
             'designation'       => $row['designation'] ?? null,
             'sex'               => $row['sex'] ?? null,
             'school_office'     => $row['school_office'] ?? null,
@@ -32,13 +34,13 @@ class ParticipantsImport implements ToModel, WithHeadingRow, WithValidation
     {
         return [
             '*.district_division' => ['required', 'string', 'max:255'],
-            '*.municipality'      => ['required', 'string', 'max:255'],
+            '*.municipality'      => ['required','string', 'max:255'],
             '*.full_name'         => ['required', 'string', 'max:255'],
             '*.sex'               => ['required', Rule::in(['Male', 'Female'])],
             '*.designation'       => ['nullable', 'string', 'max:255'],
             '*.school_office'     => ['nullable', 'string', 'max:255'],
-            '*.email'             => ['nullable', 'email'],
-            '*.contact_number'    => ['nullable', 'string', 'max:20'],
+            '*.email'             => ['nullable', 'string'],
+            '*.contact_number'    => ['nullable', 'max:255'],
         ];
     }
 
@@ -52,5 +54,13 @@ class ParticipantsImport implements ToModel, WithHeadingRow, WithValidation
             '*.sex.in'                     => 'Sex must be either Male or Female.',
             '*.email.email'                => 'The email must be a valid email address.',
         ];
+    }
+
+    /**
+     * Skip duplicates if full_name + email already exists
+     */
+    public function uniqueBy()
+    {
+        return ['full_name', 'email'];
     }
 }

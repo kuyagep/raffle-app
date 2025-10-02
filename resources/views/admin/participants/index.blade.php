@@ -60,9 +60,9 @@
                         <tr>
                             <th width="40">
                                 <input type="checkbox" id="selectAllPage"> <!-- Select visible page -->
-                                {{-- <small>
+                                <small>
                                     <input type="checkbox" id="selectAllAcross">
-                                </small> --}}
+                                </small>
                             </th>
                             <th>Full Name</th>
                             <th>District/Division</th>

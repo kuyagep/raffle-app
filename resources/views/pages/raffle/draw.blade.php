@@ -5,7 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raffle Draw</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
+     <link href="{{ asset('static/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('static/css/sb-admin-2.min.css') }}" rel="stylesheet">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="{{asset("images/favicon/apple-touch-icon.png")}}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{asset("images/favicon/favicon-32x32.png")}}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{asset("images/favicon/favicon-16x16.png")}}">
+    <link rel="manifest" href="{{asset("images/favicon/site.webmanifest")}}">
+
+        <!-- Google Fonts: Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif !important;
+        }
+    </style>
+
     <style>
         body {
             background: #003399;
@@ -99,26 +116,26 @@
         <!-- Final Winner -->
         <h1 id="winner" class="winner mt-5"></h1>
 
-        <button id="startBtn" class="btn btn-lg btn-light">Start Draw</button>
-        <button id="redrawBtn" class="btn btn-danger btn-lg d-none">Redraw Prize</button>
+        <button id="startBtn" class="btn btn-lg bg-gradient-success text-white">Start Draw</button>
+        <button id="redrawBtn" class="btn bg-gradient-danger btn-lg d-none text-white">Redraw Prize</button>
 
         <!-- Recent Winners -->
-        <div class="recent-winners mt-5">
+        <div class="recent-winners mt-5 mb-5">
             <h3 class="text-white mb-2">🏆
                 <a href="{{ route('public.winners') }}" class="text-white">Recent Winners</a>
             </h3>
             <ul class="list-group w-75 mx-auto" id="recentWinnersList">
                 @forelse($recentWinners as $rw)
                     <li class="list-group-item d-flex justify-content-between text-dark">
-                        <span>{{ $rw->participant->full_name }}</span>
-                        <span class="badge badge-info">{{ $rw->prize->name }}</span>
+                        <span><b>{{ $rw->participant->full_name }}</b> - {{ $rw->participant->district_division }}</span>
+                        <span class="badge badge-success">{{ $rw->prize->name }}</span>
                     </li>
                 @empty
                     <li class="list-group-item text-muted">No winners yet.</li>
                 @endforelse
             </ul>
         </div>
-
+        <div><span class="text-white">Made with ❤️ Geperson Mamalias</span></div>
     </div>
 
     <!-- Confetti JS -->
@@ -230,8 +247,8 @@
                 if (data.length > 0) {
                     data.forEach(w => {
                         html += `<li class="list-group-item d-flex justify-content-between text-dark">
-                                    <span>${w.participant.full_name}</span>
-                                    <span class="badge badge-info">${w.prize.name}</span>
+                                    <span><b>${w.participant.full_name}</b> - ${w.participant.district_division}</span>
+                                    <span class="badge badge-success">${w.prize.name}</span>
                                 </li>`;
                     });
                 } else {
@@ -357,7 +374,7 @@
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
+                cancelButtonColor: '#003399',
                 confirmButtonText: 'Yes, Redraw!'
             }).then((result) => {
                 if (result.isConfirmed) {
