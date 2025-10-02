@@ -9,6 +9,10 @@
     <!-- SB Admin 2 CSS -->
     <link href="{{ asset('static/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
     <link href="{{ asset('static/css/sb-admin-2.min.css') }}" rel="stylesheet">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{asset("images/favicon/apple-touch-icon.png")}}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{asset("images/favicon/favicon-32x32.png")}}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{asset("images/favicon/favicon-16x16.png")}}">
+    <link rel="manifest" href="{{asset("images/favicon/site.webmanifest")}}">
     <style>
         body {
             /* background-color: #003399; */
@@ -23,7 +27,7 @@
             background-color: #003399;
             color: #fff;
         }
-        
+
 
     </style>
 </head>
