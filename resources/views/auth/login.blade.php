@@ -76,8 +76,8 @@
                                             alt="Logo">
 
                                         <!-- System Title -->
-                                        <h1 class="h4 text-gray-900 mb-2">Login to Dashboard</h1>
-                                        <p class="mb-4">Smart Raffle System</p>
+                                        <h1 class="h4 text-gray-900 mb-2">Smart Raffle System</h1>
+                                        {{-- <p class="mb-4">Smart Raffle System</p> --}}
                                     </div>
 
                                     <form class="user" method="POST" action="/login">

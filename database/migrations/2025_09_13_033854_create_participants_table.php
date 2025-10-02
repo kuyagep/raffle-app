@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('participants', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->string('district_division');
-            $table->string('municipality');
+            $table->string('municipality')->default("Division Office");
             $table->string('full_name');
             $table->string('designation')->nullable();
             $table->enum('sex', ['Male', 'Female'])->nullable();
