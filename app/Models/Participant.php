@@ -44,4 +44,8 @@ class Participant extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+    public function raffleWinner()
+    {
+        return $this->hasMany(RaffleWinner::class);
+    }
 }

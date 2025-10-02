@@ -12,9 +12,16 @@ use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\RaffleDrawController;
 use App\Http\Controllers\WinnerController;
 use App\Http\Middleware\RoleMiddleware;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return view('landing');
+    // return view('landing');
+    if (!Auth::check()) {
+        return redirect("/login");
+    }else {
+        return redirect("/admin/dashboard");
+    }
+    return view("/landing");
 });
 Route::get('/raffle-winners', [WinnerController::class, 'winners'])->name('public.winners');
 
@@ -74,6 +81,7 @@ Route::get('captcha/{config?}', '\Mews\Captcha\CaptchaController@getCaptcha');
 Route::middleware(['auth'])->group(function () {
     Route::get('/raffle', [RaffleDrawController::class, 'showDrawPage'])->name('raffle.draw');
     Route::post('/raffle-draw/start', [RaffleDrawController::class, 'startDraw'])->name('raffle.start');
+    Route::post('/raffle/redraw', [RaffleDrawController::class, 'redraw'])->name('raffle.redraw');
     Route::get('/raffle-draw/recent-winners', [RaffleDrawController::class, 'recentWinners'])->name('raffle.recentWinners');
     Route::get('participants/list', [RaffleDrawController::class, 'list'])
         ->name('participants.list');
@@ -83,6 +91,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('scan', [AttendanceController::class, 'scan'])->name('attendance.scan');
     Route::post('attendance/store', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/certificate/{attendance}', [CertificateController::class, 'generate'])->name('certificate.generate');
+
+
 });
 
 

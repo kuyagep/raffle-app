@@ -24,6 +24,7 @@ class RaffleDrawController extends Controller
         return view('pages.raffle.draw', compact('participants', 'prizes', 'recentWinners'));
     }
 
+    // Start the draw
     public function startDraw(Request $request)
     {
         $request->validate([
@@ -32,17 +33,46 @@ class RaffleDrawController extends Controller
 
         $prize = Prize::findOrFail($request->prize_id);
 
-        // Check if prize still has quantity left
         if ($prize->quantity <= $prize->winners()->count()) {
             return response()->json(['error' => 'All winners already drawn for this prize.'], 422);
         }
+
+        return $this->pickWinner($prize);
+    }
+
+    // Redraw if winner didn't claim
+    public function redraw(Request $request)
+    {
+        $request->validate([
+            'prize_id' => 'required|exists:prizes,id',
+            'old_winner_id' => 'required|exists:participants,id',
+        ]);
+
+        $prize = Prize::findOrFail($request->prize_id);
+
+        /// Find and delete the old winner record for this prize
+        $oldWinner = $prize->winners()
+            ->where('participant_id', $request->old_winner_id)
+            ->first();
+
+        if ($oldWinner) {
+            $oldWinner->delete();
+        }
+
+        return $this->pickWinner($prize);
+    }
+
+    // Common winner selection logic
+    private function pickWinner(Prize $prize)
+    {
+        $winner = null;
 
         DB::transaction(function () use ($prize, &$winner) {
             $winner = Participant::whereNotIn('id', function ($q) {
                 $q->select('participant_id')->from('raffle_winners');
             })
                 ->inRandomOrder()
-                ->lockForUpdate() // prevents race condition
+                ->lockForUpdate()
                 ->first();
 
             if (!$winner) {
@@ -51,20 +81,25 @@ class RaffleDrawController extends Controller
 
             RaffleWinner::create([
                 'participant_id' => $winner->id,
-                'prize_id' => $prize->id,
+                'prize_id'       => $prize->id,
             ]);
         });
 
+        if (!$winner) {
+            return response()->json(['error' => 'No eligible participants left.'], 422);
+        }
 
         return response()->json([
             'winner' => [
-                'full_name' => $winner->full_name,
-                'school_office' => $winner->school_office,
+                'id' => $winner->id,  // ✅ add this
+                'full_name'         => $winner->full_name,
+                'school_office'     => $winner->school_office,
                 'district_division' => $winner->district_division,
-                'municipality' => $winner->municipality,
-                'designation' => $winner->designation,
+                'municipality'      => $winner->municipality,
+                'designation'       => $winner->designation,
             ],
             'prize' => [
+                'id' => $prize->id,   // ✅ add this
                 'name' => $prize->name
             ]
         ]);

@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="text-center mb-5 ">
-        <h1 class="h3"><i class="fas fa-trophy text-warning"></i> <span class="text-primary"><strong>Raffle Winners</strong></span></h1>
+        <h1 class="h3"><i class="fas fa-trophy text-warning"></i> <span class="text-primary"><strong><a href="{{route("raffle.draw")}}" class="text-primary">Raffle Winners</a></strong></span></h1>
         <p class="text-primary">National Teachers' Day 2025 Celebration</p>
     </div>
 

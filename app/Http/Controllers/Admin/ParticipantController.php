@@ -20,7 +20,7 @@ class ParticipantController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Participant::query();
+        $query = Participant::query()->with("raffleWinner");
 
         // Filtering
         if ($request->filled('search')) {

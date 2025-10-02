@@ -58,15 +58,15 @@
     <li class="nav-item {{ request()->routeIs('public.winners') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('public.winners') }}" target="_blank">
             <i class="fas fa-trophy"></i>
-            <span>Raffle Wiiners</span>
+            <span>Raffle Winners</span>
         </a>
     </li>
-    <li class="nav-item {{ request()->routeIs('attendance.scan') ? 'active' : '' }}">
+    {{-- <li class="nav-item {{ request()->routeIs('attendance.scan') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('attendance.scan') }}" target="_blank">
             <i class="fas fa-qrcode"></i>
             <span>Scan QRCODE</span>
         </a>
-    </li>
+    </li> --}}
 
 
 
