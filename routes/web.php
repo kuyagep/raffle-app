@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('prizes', PrizeController::class)->except(['show']);
         Route::get('winners', [WinnerController::class, 'index'])->name('winners.index');
         Route::post('prizes/{prize}/draw', [PrizeController::class, 'draw'])->name('prizes.draw');
-
+        Route::post('/admin/prizes/{prize}/pre-draw', [PrizeController::class, 'preDraw'])->name('prizes.preDraw');
         // routes/web.php
         Route::post('winners/update-selection', [WinnerController::class, 'updateSelection'])->name('winners.updateSelection');
         Route::get('winners/print', [WinnerController::class, 'print'])->name('winners.print');

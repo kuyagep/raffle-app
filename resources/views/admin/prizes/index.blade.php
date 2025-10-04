@@ -41,7 +41,16 @@
                                         class="d-inline">
                                         @csrf
                                         <button type="submit" class="btn btn-deped btn-sm">
-                                            <i class="fas fa-random"></i> Pre Draw
+                                            <i class="fas fa-random"></i> Pre Draw ALL
+                                        </button>
+                                    </form>
+
+                                    <!-- Pre Draw Button -->
+                                    <form action="{{ route('admin.prizes.preDraw', $prize->id) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-deped btn-sm">
+                                            <i class="fas fa-dice"></i> Pre Draw 
                                         </button>
                                     </form>
                                 @else

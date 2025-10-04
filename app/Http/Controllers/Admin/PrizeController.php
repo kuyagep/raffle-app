@@ -128,4 +128,70 @@ class PrizeController extends Controller
 
         return back()->with('success', 'Winners drawn: ' . implode(', ', $drawnWinners));
     }
+
+    public function preDraw(Prize $prize)
+    {
+        $winnersCount = $prize->winners()->count();
+
+        if ($winnersCount >= $prize->quantity) {
+            return back()->with('error', 'All winners already drawn for this prize.');
+        }
+
+        // Get ALL participants who already won ANY prize
+        $alreadyWinners = RaffleWinner::pluck('participant_id')->toArray();
+
+        // Excluded divisions
+        $excluded = [
+            'School Governance and Operations Division',
+            'Office of the Schools Division Office',
+            'Curriculum Implementation Division',
+        ];
+
+        // Eligible = never won + not in excluded divisions
+        $eligible = Participant::whereNotIn('id', $alreadyWinners)
+            ->whereNotIn('district_division', $excluded)
+            ->get();
+
+        if ($eligible->isEmpty()) {
+            return back()->with('error', 'No eligible participants left for Pre-Draw.');
+        }
+
+        // ✅ Group participants by district_division
+        $grouped = $eligible->groupBy('district_division');
+
+        $remaining = $prize->quantity - $winnersCount;
+        $drawnWinners = [];
+
+        // Distribute prizes in rounds until we run out
+        while ($remaining > 0 && $grouped->isNotEmpty()) {
+            foreach ($grouped as $division => $participants) {
+                if ($remaining <= 0) break;
+
+                if ($participants->isEmpty()) {
+                    $grouped->forget($division);
+                    continue;
+                }
+
+                // Random winner from this division
+                $winner = $participants->random();
+
+                RaffleWinner::create([
+                    'participant_id' => $winner->id,
+                    'prize_id'      => $prize->id,
+                ]);
+
+                $drawnWinners[] = $winner->full_name . " ({$division})";
+                $remaining--;
+
+                // Remove this winner
+                $grouped[$division] = $participants->reject(fn($p) => $p->id === $winner->id);
+
+                if ($grouped[$division]->isEmpty()) {
+                    $grouped->forget($division);
+                }
+            }
+        }
+
+        return back()->with('success', 'Pre-Draw winners drawn: ' . implode(', ', $drawnWinners));
+    }
 }
