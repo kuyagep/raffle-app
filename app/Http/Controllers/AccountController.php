@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AccountController extends Controller
 {
@@ -15,7 +17,7 @@ class AccountController extends Controller
 
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = User::findOrFail('id',Auth::user()->id);
 
         $request->validate([
             'name' => 'required|string|max:255',
