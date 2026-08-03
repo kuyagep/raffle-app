@@ -10,7 +10,6 @@ use App\Models\Participant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Maatwebsite\Excel\Validators\ValidationException as ExcelValidationException;
 
 class ParticipantController extends Controller
@@ -42,21 +41,6 @@ class ParticipantController extends Controller
         return view('admin.participants.index', compact('participants'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -64,22 +48,6 @@ class ParticipantController extends Controller
     public function show(Participant $participant)
     {
         return view('admin.participants.show', compact('participant'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
     }
 
     /**
@@ -127,7 +95,7 @@ class ParticipantController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv|max:5120', // larger limit (5MB)
+            'file' => 'required|mimes:xlsx,xls,csv|max:5120',
         ]);
 
         try {
@@ -138,9 +106,9 @@ class ParticipantController extends Controller
                 'message' => 'Participants imported successfully!',
             ]);
         } catch (ExcelValidationException $e) {
-            // Import validation errors (row-level)
             $failures = $e->failures();
             $errors = [];
+
             foreach ($failures as $failure) {
                 $errors[] = "Row {$failure->row()}: " . implode(', ', $failure->errors());
             }
@@ -150,7 +118,6 @@ class ParticipantController extends Controller
                 'errors' => $errors,
             ], 422);
         } catch (\Throwable $e) {
-            // Log the error for debugging
             Log::error('Participants import error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
@@ -158,7 +125,7 @@ class ParticipantController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'An unexpected error occurred during import.',
-                'error' => $e->getMessage(), // you may remove in production
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }

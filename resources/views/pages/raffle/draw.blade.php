@@ -6,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raffle Draw</title>
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
-     <link href="{{ asset('static/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('static/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
     <link href="{{ asset('static/css/sb-admin-2.min.css') }}" rel="stylesheet">
 
-    <link rel="apple-touch-icon" sizes="180x180" href="{{asset("images/favicon/apple-touch-icon.png")}}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{asset("images/favicon/favicon-32x32.png")}}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{asset("images/favicon/favicon-16x16.png")}}">
-    <link rel="manifest" href="{{asset("images/favicon/site.webmanifest")}}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('images/favicon/site.webmanifest') }}">
 
-        <!-- Google Fonts: Roboto -->
+    <!-- Google Fonts: Roboto -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
@@ -127,7 +127,8 @@
             <ul class="list-group w-75 mx-auto" id="recentWinnersList">
                 @forelse($recentWinners as $rw)
                     <li class="list-group-item d-flex justify-content-between text-dark">
-                        <span><b>{{ $rw->participant->full_name }}</b> - {{ $rw->participant->district_division }}</span>
+                        <span><b>{{ $rw->participant->full_name }}</b> -
+                            {{ $rw->participant->district_division }}</span>
                         <span class="badge badge-success">{{ $rw->prize->name }}</span>
                     </li>
                 @empty
@@ -135,7 +136,7 @@
                 @endforelse
             </ul>
         </div>
-        <div><span class="text-white">Made with ❤️ Geperson Mamalias</span></div>
+        <div><span class="text-white">Developed by: Geperson Mamalias</span></div>
     </div>
 
     <!-- Confetti JS -->

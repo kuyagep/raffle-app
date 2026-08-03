@@ -15,14 +15,17 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->string('district_division');
             $table->string('municipality')->default("Division Office");
-            $table->string('full_name')->unique();
+            $table->string('full_name'); // Removed ->unique()
             $table->string('designation')->nullable();
             $table->enum('sex', ['Male', 'Female'])->nullable();
             $table->string('school_office');
-            $table->string('email')->nullable()->unique();
+            $table->string('email')->nullable(); // Removed ->unique()
             $table->string('contact_number')->nullable();
             $table->string('qr_code')->unique();
             $table->timestamps();
+
+            // Composite unique index matching uniqueBy()
+            $table->unique(['full_name', 'email']);
         });
     }
 
