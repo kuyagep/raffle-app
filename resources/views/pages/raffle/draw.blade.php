@@ -95,7 +95,7 @@
 <body>
     <div class="container">
 
-        <h1 class="mb-4">National Teachers' Day Raffle Draw</h1>
+        <h1 class="mb-4">World Teachers' Day Raffle Draw</h1>
 
         <!-- Prize Selection -->
         <div class="form-group mb-5">
