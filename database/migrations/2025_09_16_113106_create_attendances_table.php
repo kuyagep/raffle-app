@@ -14,9 +14,7 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('participant_id')
-                ->constrained('participants')
-                ->cascadeOnDelete();
+            $table->foreignUlid('participant_id')->constrained('participants')->cascadeOnDelete();
             $table->string('event_name'); // e.g., "Teachers Conference 2025"
             $table->timestamp('scanned_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamps();

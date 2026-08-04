@@ -27,6 +27,18 @@
             <span>Participants</span>
         </a>
     </li>
+    <li class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+        <a class="nav-link " href="{{ route('admin.users.index') }}">
+            <i class="fas fa-users"></i>
+            <span>Manage Users</span>
+        </a>
+    </li>
+    <li class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
+        <a class="nav-link " href="{{ route('admin.events.index') }}">
+            <i class="fas fa-users"></i>
+            <span>Manage Events</span>
+        </a>
+    </li>
     <!-- Divider -->
     <hr class="sidebar-divider">
 
@@ -46,19 +58,6 @@
         <a class="nav-link" href="{{ route('admin.winners.index') }}">
             <i class="fas fa-trophy"></i>
             <span>Winners</span>
-        </a>
-    </li>
-
-    <li class="nav-item {{ request()->routeIs('raffle.draw') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('raffle.draw') }}" target="_blank">
-            <i class="fas fa-random"></i>
-            <span>Raffle Draw</span>
-        </a>
-    </li>
-    <li class="nav-item {{ request()->routeIs('public.winners') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('public.winners') }}" target="_blank">
-            <i class="fas fa-trophy"></i>
-            <span>Raffle Winners</span>
         </a>
     </li>
     {{-- <li class="nav-item {{ request()->routeIs('attendance.scan') ? 'active' : '' }}">

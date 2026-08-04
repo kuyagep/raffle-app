@@ -14,10 +14,19 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->string('name');
+            $table->string('firstname')->nullable();
+            $table->string('lastname')->nullable();
+            $table->string('position')->nullable();
+            $table->enum('sex', ['Male', 'Female'])->nullable();
+            $table->foreignUlid('office_id')
+                ->nullable()
+                ->constrained('offices')
+                ->nullOnDelete();
             $table->string('email')->unique();
+            $table->string('contact_number', 50)->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'staff'])->default('staff');
+            $table->enum('role', ['admin', 'staff', 'user'])->default('user');
             $table->rememberToken();
             $table->timestamps();
         });

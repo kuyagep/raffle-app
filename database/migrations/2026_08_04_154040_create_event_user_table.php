@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('prizes', function (Blueprint $table) {
-            $table->ulid('id')->primary();
-            $table->string('name');                          // e.g. "Mug", "T-Shirt", "Gift Certificate"
-            $table->unsignedInteger('quantity')->default(1); // how many of this prize
+        Schema::create('event_user', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('event_id')->constrained()->onDelete('cascade');
+            $table->ulid('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
+
+            // Prevent duplicate joins
+            $table->unique(['event_id', 'user_id']);
         });
     }
 
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('prizes');
+        Schema::dropIfExists('event_user');
     }
 };

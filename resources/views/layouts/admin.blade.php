@@ -10,10 +10,10 @@
     <link href="{{ asset('static/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
     <link href="{{ asset('static/css/sb-admin-2.min.css') }}" rel="stylesheet">
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
-        <link rel="apple-touch-icon" sizes="180x180" href="{{asset("images/favicon/apple-touch-icon.png")}}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{asset("images/favicon/favicon-32x32.png")}}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{asset("images/favicon/favicon-16x16.png")}}">
-    <link rel="manifest" href="{{asset("images/favicon/site.webmanifest")}}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('images/favicon/site.webmanifest') }}">
     <style>
         .btn-deped {
             background-color: #003399;
@@ -26,7 +26,8 @@
             border-color: #002b73;
             color: #fff;
         }
-        .bg-theme{
+
+        .bg-theme {
             background-color: #003399;
             color: #fff;
         }
@@ -55,9 +56,7 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
-                    @yield('content')
-                </div>
+                @yield('content')
                 <!-- End Page Content -->
 
             </div>

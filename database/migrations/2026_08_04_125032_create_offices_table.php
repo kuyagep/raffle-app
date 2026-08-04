@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('prizes', function (Blueprint $table) {
+        Schema::create('offices', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->string('name');                          // e.g. "Mug", "T-Shirt", "Gift Certificate"
-            $table->unsignedInteger('quantity')->default(1); // how many of this prize
+            $table->foreignUlid('department_id')->constrained()->cascadeOnDelete();
+            $table->string('code')->unique()->nullable();
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('prizes');
+        Schema::dropIfExists('offices');
     }
 };

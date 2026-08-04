@@ -5,39 +5,38 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
+
 class Participant extends Model
 {
     use HasFactory, HasUlids;
 
 
     protected $fillable = [
-        'district_division',
-        'municipality',
-        'full_name',
-        'designation',
+        'office_id',
+        'firstname',
+        'lastname',
+        'position',
         'sex',
-        'school_office',
         'email',
         'contact_number',
         'qr_code',
     ];
 
-    protected $keyType = 'string';
+    /**
+     * Include 'full_name' automatically when converting model to Array or JSON.
+     */
+    protected $appends = ['full_name'];
 
-    public $incrementing = false;
-
-    protected static function boot()
+    /**
+     * Get the participant's full name.
+     */
+    protected function fullName(): Attribute
     {
-
-
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->{$model->getKeyName()})) {
-                $model->{$model->getKeyName()} = (string) strtolower(Str::ulid());
-            }
-        });
+        return Attribute::make(
+            get: fn() => trim("{$this->firstname} {$this->lastname}")
+        );
     }
 
     // Relation: Participant has many attendances
@@ -48,5 +47,10 @@ class Participant extends Model
     public function raffleWinner()
     {
         return $this->hasMany(RaffleWinner::class);
+    }
+
+    public function office()
+    {
+        return $this->belongsTo(Office::class);
     }
 }

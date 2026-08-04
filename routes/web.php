@@ -6,10 +6,13 @@ use App\Http\Controllers\Admin\ParticipantController as AdminParticipantControll
 use App\Http\Controllers\Admin\PrizeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ParticipantController;
+use App\Http\Controllers\PreRegistrationController;
 use App\Http\Controllers\RaffleDrawController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WinnerController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Auth;
@@ -18,10 +21,9 @@ Route::get('/', function () {
     // return view('landing');
     if (!Auth::check()) {
         return redirect("/login");
-    }else {
+    } else {
         return redirect("/admin/dashboard");
     }
-    return view("/landing");
 });
 Route::get('/raffle-winners', [WinnerController::class, 'winners'])->name('public.winners');
 
@@ -58,6 +60,14 @@ Route::middleware(['auth'])->group(function () {
 
 
         Route::resource('participants', AdminParticipantController::class)->only(['index', 'show', 'destroy']);
+
+        Route::resource('users', UserController::class);
+
+        Route::get('/events', [EventController::class, 'index'])->name('events.index');
+        Route::post('/events', [EventController::class, 'store'])->name('events.store');
+        Route::post('/events/{id}/toggle-join', [EventController::class, 'toggleJoin'])
+            ->name('events.toggle-join');
+        Route::get('/events/{id}/participants', [EventController::class, 'participants'])->name('events.participants');
     });
 })->middleware(RoleMiddleware::class);
 
@@ -68,6 +78,21 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/api/departments/{id}/offices', function ($id) {
+    return \App\Models\Office::where('department_id', $id)->get(['id', 'name']);
+});
+Route::get('/events/join/{code}', [EventController::class, 'joinByLink'])
+    ->name('events.join-by-link');
+
+Route::post('/events/join/{code}/pre-register', [EventController::class, 'storePreRegistration'])
+    ->name('events.pre-register.store');
+
+
+Route::get('/preregistration', [PreRegistrationController::class, 'create'])->name('preregistration.create');
+
+// Process Pre-Registration Form Submission (AJAX)
+Route::post('/preregistration', [PreRegistrationController::class, 'store'])->name('preregistration.store');
 
 
 // public routes for participants
@@ -91,9 +116,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('scan', [AttendanceController::class, 'scan'])->name('attendance.scan');
     Route::post('attendance/store', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/certificate/{attendance}', [CertificateController::class, 'generate'])->name('certificate.generate');
-
-
 });
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
