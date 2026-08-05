@@ -1,9 +1,9 @@
-@extends('layouts.main')
+@extends('layouts.app')
 
 @section('content')
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-calendar-alt text-danger mr-2"></i>Events Management</h1>
+            <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-calendar-alt text-danger mr-2"></i>Events</h1>
             @if (auth()->user()->role === 'admin')
                 <button class="btn btn-sm btn-dark-red" data-toggle="modal" data-target="#createEventModal">
                     <i class="fas fa-plus-circle mr-1"></i> Create Event
@@ -13,69 +13,71 @@
 
         <div id="alertContainer"></div>
 
-        <div class="card shadow mb-4">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-striped mb-0" id="eventsTable">
-                        <thead class="bg-theme text-white">
-                            <tr>
-                                <th>Title</th>
-                                <th>Location</th>
-                                <th>Event Date</th>
-                                <th>Join Link</th>
-                                <th>Participants</th>
-                                <th class="text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($events as $event)
-                                <tr id="event-row-{{ $event->id }}">
-                                    <td class="align-middle font-weight-bold">{{ $event->title }}</td>
-                                    <td class="align-middle">{{ $event->location }}</td>
-                                    <td class="align-middle text-muted small">
-                                        <i class="far fa-clock text-danger mr-1"></i>
-                                        {{ $event->formatted_date_range }}
-                                    </td>
-                                    <td class="align-middle">
-                                        <div class="input-group input-group-sm" style="max-width: 200px;">
-                                            <input type="text" class="form-control" value="{{ $event->join_url }}"
-                                                readonly id="link-{{ $event->id }}">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-outline-secondary copy-btn"
-                                                    data-id="{{ $event->id }}" title="Copy Join Link">
-                                                    <i class="fas fa-copy"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="align-middle">
-                                        <button class="btn btn-sm btn-link p-0 view-participants"
-                                            data-id="{{ $event->id }}">
-                                            <span
-                                                id="participant-count-{{ $event->id }}">{{ $event->participants_count }}</span>
-                                            Participant(s)
+        <div class="row" id="eventsContainer">
+            @forelse($events as $event)
+                <div class="col-md-6 col-lg-4 mb-4" id="event-card-{{ $event->id }}">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header bg-theme text-white d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0 font-weight-bold text-truncate" title="{{ $event->title }}">
+                                {{ $event->title }}
+                            </h5>
+                            @if (auth()->user()->role == 'admin')
+                                <button class="btn btn-sm btn-light font-weight-bold view-participants"
+                                    data-id="{{ $event->id }}">
+                                    <i class="fas fa-users text-primary mr-1"></i>
+                                    <span id="participant-count-{{ $event->id }}">{{ $event->participants_count }}</span>
+                                </button>
+                            @endif
+                        </div>
+
+                        <div class="card-body d-flex flex-column">
+                            <!-- Location -->
+                            <p class="card-text mb-2 text-secondary">
+                                <i class="fas fa-map-marker-alt text-danger mr-2"></i>
+                                <span>{{ $event->location }}</span>
+                            </p>
+
+                            <!-- Event Date Range -->
+                            <p class="card-text mb-3 text-muted small">
+                                <i class="far fa-clock text-danger mr-2"></i>
+                                {{ $event->formatted_date_range }}
+                            </p>
+
+                            <!-- Join Link Copy Input -->
+                            <div class="form-group mb-3 mt-auto">
+                                <label class="small text-muted font-weight-bold mb-1">Join Link</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" value="{{ $event->join_url }}" readonly
+                                        id="link-{{ $event->id }}">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary copy-btn" data-id="{{ $event->id }}"
+                                            title="Copy Join Link">
+                                            <i class="fas fa-copy"></i>
                                         </button>
-                                    </td>
-                                    <td class="align-middle text-right">
-                                        @php $isJoined = $event->isJoinedBy(auth()->id()); @endphp
-                                        <button
-                                            class="btn btn-sm {{ $isJoined ? 'btn-outline-danger' : 'btn-success' }} join-btn"
-                                            data-id="{{ $event->id }}">
-                                            <i class="fas {{ $isJoined ? 'fa-user-minus' : 'fa-user-plus' }} mr-1"></i>
-                                            <span class="btn-text">{{ $isJoined ? 'Leave Event' : 'Join Event' }}</span>
-                                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
-                                        </button>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">No events scheduled.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer / Action Button -->
+                        <div class="card-footer bg-light border-0 text-right">
+                            @php $isJoined = $event->isJoinedBy(auth()->id()); @endphp
+                            <button type="button"
+                                class="btn btn-sm {{ $isJoined ? 'btn-outline-danger' : 'btn-success' }} join-btn btn-block"
+                                data-id="{{ $event->id }}">
+                                <i class="fas {{ $isJoined ? 'fa-user-minus' : 'fa-user-plus' }} mr-1"></i>
+                                <span class="btn-text">{{ $isJoined ? 'Leave Event' : 'Join Event' }}</span>
+                                <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @empty
+                <div class="col-12 text-center text-muted py-5">
+                    <i class="far fa-calendar-times fa-3x mb-3 d-block text-secondary"></i>
+                    <h5>No events scheduled.</h5>
+                </div>
+            @endforelse
         </div>
     </div>
 
@@ -184,6 +186,62 @@
                         });
                 });
             }
+
+
+        });
+
+        $(document).ready(function() {
+            $(document).on('click', '.join-btn', function(e) {
+                e.preventDefault();
+
+                let $btn = $(this);
+                let id = $btn.data('id');
+                let $text = $btn.find('.btn-text');
+                let $icon = $btn.find('i');
+                let $spinner = $btn.find('.spinner-border');
+
+                // Disable button & show spinner during request
+                $btn.prop('disabled', true);
+                $spinner.removeClass('d-none');
+
+                $.ajax({
+                    url: `/events/${id}/join`,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.isJoined) {
+                            // Switch UI to "Leave Event" state
+                            $btn.removeClass('btn-success').addClass('btn-outline-danger');
+                            $icon.removeClass('fa-user-plus').addClass('fa-user-minus');
+                            $text.text('Leave Event');
+                        } else {
+                            // Switch UI to "Join Event" state
+                            $btn.removeClass('btn-outline-danger').addClass('btn-success');
+                            $icon.removeClass('fa-user-minus').addClass('fa-user-plus');
+                            $text.text('Join Event');
+                        }
+
+                        // Update dynamic count badge if present in the row/card
+                        $(`.participant-count-${id}`).text(response.total_count);
+                    },
+                    error: function(xhr) {
+                        // Catch 422 capacity errors and display the controller message
+                        if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON
+                            .message) {
+                            alert(xhr.responseJSON.message);
+                        } else {
+                            alert('An error occurred. Please try again.');
+                        }
+                    },
+                    complete: function() {
+                        // Re-enable button & hide spinner
+                        $btn.prop('disabled', false);
+                        $spinner.addClass('d-none');
+                    }
+                });
+            });
         });
     </script>
 @endpush

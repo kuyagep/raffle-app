@@ -15,7 +15,7 @@ class EventController extends Controller
     public function index()
     {
         $events = Events::withCount('participants')->latest()->paginate(10);
-        return view('admin.events.index', compact('events'));
+        return view('app.events.index', compact('events'));
     }
 
     // Admin: Store new event
@@ -94,7 +94,7 @@ class EventController extends Controller
 
         return response()->json([
             'message'  => 'Pre-registration successful! Redirecting...',
-            'redirect' => route('admin.events.index')
+            'redirect' => route('dashboard')
         ]);
     }
 
@@ -131,23 +131,27 @@ class EventController extends Controller
         if ($event->isJoinedBy($user->id)) {
             // Leave Event
             $event->participants()->detach($user->id);
-            $joined = false;
+            $isJoined = false;
             $message = 'You have left the event.';
         } else {
             // Check Capacity
             if ($event->capacity && $event->participants()->count() >= $event->capacity) {
-                return response()->json(['message' => 'This event is already full.'], 422);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This event is already full.'
+                ], 422);
             }
 
             // Join Event
             $event->participants()->attach($user->id);
-            $joined = true;
+            $isJoined = true;
             $message = 'You are now a participant!';
         }
 
         return response()->json([
+            'success'     => true,
             'message'     => $message,
-            'joined'      => $joined,
+            'isJoined'    => $isJoined,
             'total_count' => $event->participants()->count()
         ]);
     }

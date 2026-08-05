@@ -41,7 +41,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('/events', [EventController::class, 'index'])->name('events.index');
     Route::post('/events', [EventController::class, 'store'])->name('events.store');
-    Route::post('/events/{id}/toggle-join', [EventController::class, 'toggleJoin'])
-        ->name('events.toggle-join');
+
     Route::get('/events/{id}/participants', [EventController::class, 'participants'])->name('events.participants');
 });

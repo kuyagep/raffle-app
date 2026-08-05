@@ -12,12 +12,12 @@ class AccountController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        return view('admin.account.edit', compact('user'));
+        return view('app.account.edit', compact('user'));
     }
 
     public function update(Request $request)
     {
-        $user = User::findOrFail('id',Auth::user()->id);
+        $user = User::findOrFail('id', Auth::user()->id);
 
         $request->validate([
             'name' => 'required|string|max:255',

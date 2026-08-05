@@ -26,11 +26,8 @@ Route::get('/', function () {
 */
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // 1. Role-Based Dashboard Router (Handles both 'user' and 'admin')
-    // ✅ DO NOT put 'role:user' or 'role:admin' on this route!
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // 2. Default Breeze Profile / Account Settings Routes
     Route::get('/account', [AccountController::class, 'edit'])->name('account.edit');
     Route::post('/account', [AccountController::class, 'update'])->name('account.update');
 
@@ -63,7 +60,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('/raffle-winners', [WinnerController::class, 'winners'])->name('public.winners');
 
-
+Route::post('/events/{id}/join', [EventController::class, 'toggleJoin'])
+    ->name('events.toggle-join');
 Route::get('/api/departments/{id}/offices', function ($id) {
     return \App\Models\Office::where('department_id', $id)->get(['id', 'name']);
 });

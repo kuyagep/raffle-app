@@ -18,56 +18,58 @@
             <span>Dashboard</span>
         </a>
     </li>
+    @if (auth()->user()->role === 'admin')
+        <!-- Nav Item - Registrations -->
+        <li class="nav-item {{ request()->routeIs('admin.participants.*') ? 'active' : '' }}">
+            <a class="nav-link " href="{{ route('admin.participants.index') }}">
+                <i class="fas fa-users"></i>
+                <span>Participants</span>
+            </a>
+        </li>
+        <li class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+            <a class="nav-link " href="{{ route('admin.users.index') }}">
+                <i class="fas fa-users"></i>
+                <span>Manage Users</span>
+            </a>
+        </li>
+        <li class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
+            <a class="nav-link " href="{{ route('admin.events.index') }}">
+                <i class="fas fa-users"></i>
+                <span>Manage Events</span>
+            </a>
+        </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider">
 
-    <!-- Nav Item - Registrations -->
-    <li class="nav-item {{ request()->routeIs('admin.participants.*') ? 'active' : '' }}">
-        <a class="nav-link " href="{{ route('admin.participants.index') }}">
-            <i class="fas fa-users"></i>
-            <span>Participants</span>
-        </a>
-    </li>
-    <li class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-        <a class="nav-link " href="{{ route('admin.users.index') }}">
-            <i class="fas fa-users"></i>
-            <span>Manage Users</span>
-        </a>
-    </li>
-    <li class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
-        <a class="nav-link " href="{{ route('admin.events.index') }}">
-            <i class="fas fa-users"></i>
-            <span>Manage Events</span>
-        </a>
-    </li>
-    <!-- Divider -->
-    <hr class="sidebar-divider">
+        <!-- Raffle Section -->
+        <div class="sidebar-heading">
+            Raffle
+        </div>
 
-    <!-- Raffle Section -->
-    <div class="sidebar-heading">
-        Raffle
-    </div>
+        <li class="nav-item {{ request()->routeIs('admin.prizes.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin.prizes.index') }}">
+                <i class="fas fa-gift"></i>
+                <span>Prizes</span>
+            </a>
+        </li>
 
-    <li class="nav-item {{ request()->routeIs('admin.prizes.*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('admin.prizes.index') }}">
-            <i class="fas fa-gift"></i>
-            <span>Prizes</span>
-        </a>
-    </li>
-
-    <li class="nav-item {{ request()->routeIs('admin.winners.*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('admin.winners.index') }}">
-            <i class="fas fa-trophy"></i>
-            <span>Winners</span>
-        </a>
-    </li>
-    {{-- <li class="nav-item {{ request()->routeIs('attendance.scan') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('attendance.scan') }}" target="_blank">
-            <i class="fas fa-qrcode"></i>
-            <span>Scan QRCODE</span>
-        </a>
-    </li> --}}
+        <li class="nav-item {{ request()->routeIs('admin.winners.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin.winners.index') }}">
+                <i class="fas fa-trophy"></i>
+                <span>Winners</span>
+            </a>
+        </li>
+    @endif
 
 
-
+    @if (auth()->user()->role === 'user')
+        <li class="nav-item {{ request()->routeIs('user.events.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('user.events.index') }}">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Events</span>
+            </a>
+        </li>
+    @endif
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
 
