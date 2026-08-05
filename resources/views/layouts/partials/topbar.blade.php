@@ -5,23 +5,24 @@
     </button>
 
     <!-- App Title -->
-    <h5 class="m-0 font-weight-bold text-white">Online System</h5>
+    <h5 class="m-0 font-weight-bold text-white">{{ config('app.name', 'DepEd Portal') }}</h5>
 
     <ul class="navbar-nav ml-auto">
-        <!-- Raffle Links -->
-        <li class="nav-item {{ request()->routeIs('raffle.draw') ? 'active' : '' }}">
-            <a class="nav-link text-white" href="{{ route('raffle.draw') }}" target="_blank">
-                <i class="fas fa-random text-white-50 mr-1"></i>
-                <span class="text-white d-none d-lg-inline">Raffle Draw</span>
-            </a>
-        </li>
-        <li class="nav-item {{ request()->routeIs('public.winners') ? 'active' : '' }}">
-            <a class="nav-link text-white" href="{{ route('public.winners') }}" target="_blank">
-                <i class="fas fa-trophy text-white-50 mr-1"></i>
-                <span class="text-white d-none d-lg-inline">Raffle Winners</span>
-            </a>
-        </li>
-
+        @if (auth()->user()->role === 'admin')
+            <!-- Raffle Links -->
+            <li class="nav-item {{ request()->routeIs('raffle.draw') ? 'active' : '' }}">
+                <a class="nav-link text-white" href="{{ route('raffle.draw') }}" target="_blank">
+                    <i class="fas fa-random text-white-50 mr-1"></i>
+                    <span class="text-white d-none d-lg-inline">Raffle Draw</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->routeIs('public.winners') ? 'active' : '' }}">
+                <a class="nav-link text-white" href="{{ route('public.winners') }}" target="_blank">
+                    <i class="fas fa-trophy text-white-50 mr-1"></i>
+                    <span class="text-white d-none d-lg-inline">Raffle Winners</span>
+                </a>
+            </li>
+        @endif
         <div class="topbar-divider d-none d-sm-block border-left-light opacity-25"></div>
 
         <!-- Nav Item - User Information -->

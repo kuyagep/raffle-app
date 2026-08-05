@@ -1,19 +1,22 @@
 <ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar" style="background-color: #003399;">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('dashboard') }}">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center py-3" href="{{ route('dashboard') }}">
         <div class="sidebar-brand-icon">
-            <i class="fas fa-school"></i>
+            <img src="{{ asset('images/logo.webp') }}" class="logo-main img-fluid" style="max-height: 40px; width: auto;"
+                alt="DepEd Logo">
         </div>
-        <div class="sidebar-brand-text mx-3">DASHBOARD</div>
+        <div class="sidebar-brand-text mx-2 text-left">
+            <span class="font-weight-bold d-block leading-tight">DASHBOARD</span>
+        </div>
     </a>
 
     <!-- Divider -->
     <hr class="sidebar-divider my-0">
 
     <!-- Nav Item - Dashboard -->
-    <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-        <a class="nav-link " href="{{ route('dashboard') }}">
+    <li class="nav-item {{ request()->routeIs('user.dashboard', 'admin.dashboard') ? 'active' : '' }}">
+        <a class="nav-link " href="{{ route('user.dashboard', 'admin.dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>

@@ -6,6 +6,24 @@
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800 fw-bold">Dashboard</h1>
         </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>
+                            Welcome back, <b>{{ auth()->user()->name }}!</b>
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-regular fa-calendar"></i>
+                            <span id="currentSystemTime"></span>
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
         @if (auth()->user()->role === 'admin')
             <!-- Stat Cards Row -->
             <div class="row g-3 g-md-4 mb-4">
@@ -157,6 +175,26 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('sidebarToggle');
+
+            function updateClock() {
+                const el = document.getElementById('currentSystemTime');
+                if (el) el.textContent = new Date().toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+    </script>
     {{-- <script>
 
         document.addEventListener('DOMContentLoaded', function() {
