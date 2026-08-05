@@ -16,10 +16,14 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles)
     {
-        // if (!auth()->check() || !in_array(auth()->user()->role, $roles)) {
-        //     dd(Auth::user()->role);
-        //     abort(403, 'Unauthorized.');
-        // }
+
+
+        if (auth()->check() && !in_array(auth()->user()->role, $roles)) {
+            // 2. If user is logged in but does not have the right role -> unauthorized
+            abort(403, 'Unauthorized action.');
+        }
+
+
         return $next($request);
     }
 }

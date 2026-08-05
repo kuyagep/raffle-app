@@ -151,7 +151,7 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        @include('layouts.partials.sidebar')
+        @include('app.partials.sidebar')
         <!-- End Sidebar -->
 
         <!-- Content Wrapper -->
@@ -161,7 +161,7 @@
             <div id="content">
 
                 <!-- Topbar -->
-                @include('layouts.partials.topbar')
+                @include('app.partials.topbar')
                 <!-- End Topbar -->
 
                 <!-- Begin Page Content -->
@@ -185,7 +185,7 @@
             <!-- End Main Content -->
 
             <!-- Footer -->
-            @include('layouts.partials.footer')
+            @include('app.partials.footer')
             <!-- End Footer -->
 
         </div>

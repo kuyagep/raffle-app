@@ -57,7 +57,7 @@
 
                                 <div class="form-group col-md-6 mb-3">
                                     <label class="small font-weight-bold text-dark">Sex</label>
-                                    <select name="sex" id="sex" class="form-control">
+                                    <select name="sex" id="sex" class="custom-select">
                                         <option value="">-- Select Sex --</option>
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
@@ -70,7 +70,7 @@
                                 <div class="form-group col-md-6 mb-3">
                                     <label class="small font-weight-bold text-dark">District / Department <span
                                             class="text-danger">*</span></label>
-                                    <select id="department_id" class="form-control" required>
+                                    <select id="department_id" class="custom-select" required>
                                         <option value="">-- Select District --</option>
                                         @foreach ($departments as $dept)
                                             <option value="{{ $dept->id }}">{{ $dept->name }}</option>
@@ -81,7 +81,7 @@
                                 <div class="form-group col-md-6 mb-3">
                                     <label class="small font-weight-bold text-dark">School / Office <span
                                             class="text-danger">*</span></label>
-                                    <select name="office_id" id="office_id" class="form-control" disabled required>
+                                    <select name="office_id" id="office_id" class="custom-select" disabled required>
                                         <option value="">-- Select Department First --</option>
                                     </select>
                                     <div class="invalid-feedback" id="err-office_id"></div>

@@ -1,27 +1,34 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
-    </div>
+@extends('layouts.auth')
 
-    <form method="POST" action="{{ route('password.confirm') }}">
+@section('title', 'Confirm Password')
+@section('page_heading', 'Confirm Password')
+@section('page_subheading', 'This is a secure area of the application. Please confirm your password before continuing.')
+
+@section('content')
+    <form class="user" method="POST" action="{{ route('password.confirm') }}">
         @csrf
 
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="form-group mb-3">
+            <input type="password" name="password"
+                class="form-control form-control-user @error('password') is-invalid @enderror" placeholder="Password"
+                autocomplete="current-password" required autofocus>
+            @error('password')
+                <div class="invalid-feedback text-left pl-2">
+                    {{ $message }}
+                </div>
+            @enderror
         </div>
 
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="btn btn-dark-red btn-user btn-block mt-4">
+            Confirm Password
+        </button>
     </form>
-</x-guest-layout>
+
+    <hr>
+
+    <div class="text-center">
+        @if (Route::has('password.request'))
+            <a class="small font-weight-bold text-danger" href="{{ route('password.request') }}">Forgot Your Password?</a>
+        @endif
+    </div>
+@endsection

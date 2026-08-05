@@ -1,83 +1,68 @@
 <?php
 
 use App\Http\Controllers\AccountController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ParticipantController as AdminParticipantController;
-use App\Http\Controllers\Admin\PrizeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\PreRegistrationController;
 use App\Http\Controllers\RaffleDrawController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\WinnerController;
 use App\Http\Middleware\RoleMiddleware;
-use Illuminate\Support\Facades\Auth;
 
+
+// Public Landing Page
 Route::get('/', function () {
-    // return view('landing');
-    if (!Auth::check()) {
-        return redirect("/login");
-    } else {
-        return redirect("/admin/dashboard");
-    }
+    return view('welcome');
 });
-Route::get('/raffle-winners', [WinnerController::class, 'winners'])->name('public.winners');
 
-Route::middleware(['auth'])->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'verified'])->group(function () {
 
+    // 1. Role-Based Dashboard Router (Handles both 'user' and 'admin')
+    // ✅ DO NOT put 'role:user' or 'role:admin' on this route!
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // 2. Default Breeze Profile / Account Settings Routes
     Route::get('/account', [AccountController::class, 'edit'])->name('account.edit');
     Route::post('/account', [AccountController::class, 'update'])->name('account.update');
 
-
-    Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-        Route::delete('participants/bulk-delete', [AdminParticipantController::class, 'bulkDelete'])->name('participants.bulkDelete');
-        Route::get('participants/all-ids', [AdminParticipantController::class, 'getAllIds'])
-            ->name('participants.getAllIds');
-        Route::get('participants/export', [AdminParticipantController::class, 'export'])->name('participants.export');
-        Route::post('participants/import', [AdminParticipantController::class, 'import'])->name('participants.import');
-        Route::get('participants/download-template', [AdminParticipantController::class, 'downloadTemplate'])
-            ->name('participants.downloadTemplate');
-
-        Route::resource('prizes', PrizeController::class)->except(['show']);
-        Route::get('winners', [WinnerController::class, 'index'])->name('winners.index');
-        Route::post('prizes/{prize}/draw', [PrizeController::class, 'draw'])->name('prizes.draw');
-        Route::post('/admin/prizes/{prize}/pre-draw', [PrizeController::class, 'preDraw'])->name('prizes.preDraw');
-        // routes/web.php
-        Route::post('winners/update-selection', [WinnerController::class, 'updateSelection'])->name('winners.updateSelection');
-        Route::get('winners/print', [WinnerController::class, 'print'])->name('winners.print');
-
-        // web.php
-        Route::post('/winners/clear-selection', function () {
-            session()->forget('selected_winners');
-            return response()->json(['status' => 'cleared']);
-        })->name('winners.resetSelection');
-
-
-        Route::resource('participants', AdminParticipantController::class)->only(['index', 'show', 'destroy']);
-
-        Route::resource('users', UserController::class);
-
+    /*
+    |--------------------------------------------------------------------------
+    | Specific User Routes (Protected by role:user)
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['role:user'])->prefix('user')->name('user.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'userDashboard'])->name('dashboard');
+        // Example user-specific routes
         Route::get('/events', [EventController::class, 'index'])->name('events.index');
-        Route::post('/events', [EventController::class, 'store'])->name('events.store');
-        Route::post('/events/{id}/toggle-join', [EventController::class, 'toggleJoin'])
-            ->name('events.toggle-join');
-        Route::get('/events/{id}/participants', [EventController::class, 'participants'])->name('events.participants');
+        // Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+
     });
-})->middleware(RoleMiddleware::class);
 
+    /*
+    |--------------------------------------------------------------------------
+    | Specific Admin Routes (Protected by role:admin)
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
+        // Example admin management routes
+        // Route::resource('events', AdminEventController::class);
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
 });
+
+
+Route::get('/raffle-winners', [WinnerController::class, 'winners'])->name('public.winners');
+
 
 Route::get('/api/departments/{id}/offices', function ($id) {
     return \App\Models\Office::where('department_id', $id)->get(['id', 'name']);
@@ -120,3 +105,4 @@ Route::middleware(['auth'])->group(function () {
 
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/admin.php';
