@@ -16,7 +16,7 @@ use App\Http\Middleware\RoleMiddleware;
 
 // Public Landing Page
 Route::get('/', function () {
-    return view('welcome');
+    return view('landing');
 });
 
 /*
@@ -65,7 +65,7 @@ Route::post('/events/{id}/join', [EventController::class, 'toggleJoin'])
 Route::get('/api/departments/{id}/offices', function ($id) {
     return \App\Models\Office::where('department_id', $id)->get(['id', 'name']);
 });
-Route::get('/events/join/{code}', [EventController::class, 'joinByLink'])
+Route::get('/j/{code}', [EventController::class, 'joinByLink'])
     ->name('events.join-by-link');
 
 Route::post('/events/join/{code}/pre-register', [EventController::class, 'storePreRegistration'])

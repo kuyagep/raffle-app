@@ -109,11 +109,6 @@
         </button>
     </form>
 
-    <!-- Footer Links -->
-    <div class="text-center mt-4 pt-3 border-top">
-        <span class="small text-muted">Already registered as a user? </span>
-        <a href="{{ route('login') }}" class="small font-weight-bold text-dark-red">Log in here</a>
-    </div>
 @endsection
 
 @push('scripts')

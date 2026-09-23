@@ -42,12 +42,10 @@ class EventController extends Controller
     public function joinByLink($code)
     {
         $event = Events::where('join_code', $code)->firstOrFail();
-
         if (!Auth::check()) {
             $departments = \App\Models\Department::all();
             return view('events.pre-register', compact('event', 'departments'));
         }
-
         return $this->processUserJoin($event, Auth::user());
     }
 

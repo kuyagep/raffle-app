@@ -90,11 +90,11 @@
                                     </td>
                                     <td class="align-middle text-right">
                                         <a href="{{ route('admin.users.show', $user->id) }}"
-                                            class="btn btn-sm btn-outline-info mr-1" title="View/Edit Details">
+                                            class="btn btn-sm btn-info mr-1" title="View/Edit Details">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <button class="btn btn-sm btn-outline-danger delete-btn"
-                                            data-id="{{ $user->id }}" data-name="{{ $user->name }}"
+                                        <button class="btn btn-sm btn-danger delete-btn" data-id="{{ $user->id }}"
+                                            data-name="{{ $user->name }}"
                                             data-url="{{ route('admin.users.destroy', $user->id) }}" title="Delete User">
                                             <i class="fas fa-trash"></i>
                                             <span class="spinner-border spinner-border-sm d-none" role="status"></span>
