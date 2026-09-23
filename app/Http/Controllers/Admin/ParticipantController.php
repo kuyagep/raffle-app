@@ -21,6 +21,7 @@ class ParticipantController extends Controller
     {
         $query = Participant::query()->with("raffleWinner");
 
+
         // Filtering
         if ($request->filled('search')) {
             $search = $request->search;

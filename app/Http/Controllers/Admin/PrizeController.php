@@ -142,22 +142,20 @@ class PrizeController extends Controller
 
         // Excluded divisions
         $excluded = [
-            'School Governance and Operations Division',
-            'Office of the Schools Division Office',
-            'Curriculum Implementation Division',
+            'Division Office'
         ];
 
         // Eligible = never won + not in excluded divisions
         $eligible = Participant::whereNotIn('id', $alreadyWinners)
-            ->whereNotIn('district_division', $excluded)
+            ->whereNotIn('municipality', $excluded)
             ->get();
 
         if ($eligible->isEmpty()) {
             return back()->with('error', 'No eligible participants left for Pre-Draw.');
         }
 
-        // ✅ Group participants by district_division
-        $grouped = $eligible->groupBy('district_division');
+        // ✅ Group participants by municipality
+        $grouped = $eligible->groupBy('municipality');
 
         $remaining = $prize->quantity - $winnersCount;
         $drawnWinners = [];

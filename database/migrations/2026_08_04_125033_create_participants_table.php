@@ -13,18 +13,19 @@ return new class extends Migration
     {
         Schema::create('participants', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('office_id')->constrained()->cascadeOnDelete();
-            $table->string('lastname');
-            $table->string('firstname');
-            $table->string('position')->nullable();
+            $table->string('district_division');
+            $table->string('municipality');
+            $table->string('full_name')->unique();
+            $table->string('designation')->nullable();
+            $table->string('school_office')->nullable();
             $table->enum('sex', ['Male', 'Female'])->nullable();
-            $table->string('email')->nullable();
+            $table->string('email')->unique()->nullable();
             $table->string('contact_number')->nullable();
             $table->string('qr_code')->unique();
             $table->timestamps();
 
             // FIXED: Use actual column names
-            $table->unique(['lastname', 'firstname', 'email']);
+            // $table->unique(['lastname', 'firstname', 'email']);
         });
     }
 

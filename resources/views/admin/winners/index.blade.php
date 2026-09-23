@@ -12,35 +12,77 @@
 
         <div class="card shadow mb-4">
             <div class="card-body">
-                <table class="table table-striped">
-                    <thead class="bg-theme text-white">
-                        <tr>
-                            <th><input type="checkbox" id="selectAll"></th>
-                            <th>Prize</th>
-                            <th>Winner Name</th>
-                            <th>District/Division</th>
-                            <th>School/Office</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($winners as $winner)
+
+                <!-- Filter Controls: Search, Prize Filter & Reload Button -->
+                <div class="row mb-3">
+                    <!-- Search Input Field -->
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            </div>
+                            <input type="text" id="searchWinner" class="form-control"
+                                placeholder="Search by Winner Name...">
+                        </div>
+                    </div>
+
+                    <!-- Prize Filter Dropdown -->
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-gift"></i></span>
+                            </div>
+                            <select id="filterPrize" class="form-control">
+                                <option value="">All Prizes</option>
+                                {{-- Dynamically extract unique prizes from collection --}}
+                                @foreach ($winners->pluck('prize.name')->filter()->unique() as $prizeName)
+                                    <option value="{{ $prizeName }}">{{ $prizeName }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Reload / Reset Filters Button -->
+                    <div class="col-md-4 d-flex align-items-center">
+                        <button type="button" id="reloadBtn" class="btn btn-secondary btn-block-sm"
+                            title="Reset Filters & Reload View">
+                            <i class="fas fa-sync-alt me-1"></i> Reload
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped" id="winnersTable">
+                        <thead class="bg-theme text-white">
                             <tr>
-                                <td>
-                                    <input type="checkbox" class="rowCheckbox" value="{{ $winner->id }}"
-                                        {{ in_array($winner->id, session('selected_winners', [])) ? 'checked' : '' }}>
-                                </td>
-                                <td>{{ $winner->prize->name }}</td>
-                                <td>{{ $winner->participant->full_name }}</td>
-                                <td>{{ $winner->participant->office->name ?? '-' }}</td>
-                                <td>{{ $winner->participant->office->department->name ?? '-' }}</td>
+                                <th><input type="checkbox" id="selectAll"></th>
+                                <th>Prize</th>
+                                <th>Winner Name</th>
+                                <th>District</th>
+                                <th>School</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="9" class="text-center text-muted">No winners recorded yet.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse ($winners as $winner)
+                                <tr class="winner-row">
+                                    <td>
+                                        <input type="checkbox" class="rowCheckbox" value="{{ $winner->id }}"
+                                            {{ in_array($winner->id, session('selected_winners', [])) ? 'checked' : '' }}>
+                                    </td>
+                                    <td class="prize-name">{{ $winner->prize->name }}</td>
+                                    <td class="winner-name"><b>{{ $winner->participant->full_name }}</b></td>
+                                    <td>{{ $winner->participant->district_division ?? '-' }}</td>
+                                    <td>{{ $winner->participant->school_office ?? '-' }}</td>
+                                </tr>
+                            @empty
+                                <tr id="noRecordsRow">
+                                    <td colspan="5" class="text-center text-muted py-4">No winners recorded yet.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
         </div>
     </div>
@@ -49,6 +91,54 @@
 @push('scripts')
     <script>
         let selectedWinners = @json(session('selected_winners', []));
+
+        // Combined Filter Function (Handles both Search Input & Prize Select)
+        function filterTable() {
+            let nameFilter = document.getElementById("searchWinner").value.toLowerCase().trim();
+            let prizeFilter = document.getElementById("filterPrize").value.toLowerCase().trim();
+            let rows = document.querySelectorAll("#winnersTable tbody .winner-row");
+
+            rows.forEach(row => {
+                let nameCell = row.querySelector(".winner-name");
+                let prizeCell = row.querySelector(".prize-name");
+
+                let nameText = nameCell ? (nameCell.textContent || nameCell.innerText).toLowerCase() : "";
+                let prizeText = prizeCell ? (prizeCell.textContent || prizeCell.innerText).toLowerCase() : "";
+
+                let matchesName = nameText.includes(nameFilter);
+                let matchesPrize = (prizeFilter === "") || (prizeText === prizeFilter);
+
+                if (matchesName && matchesPrize) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        // Keyup Event for Search Input
+        document.getElementById("searchWinner").addEventListener("keyup", filterTable);
+
+        // Change Event for Prize Filter Dropdown
+        document.getElementById("filterPrize").addEventListener("change", filterTable);
+
+        // Reload Button Click Handler (Resets filters or reloads the page if desired)
+        document.getElementById("reloadBtn").addEventListener("click", function() {
+            // Visual spin effect on reload button icon
+            let icon = this.querySelector("i");
+            if (icon) icon.classList.add("fa-spin");
+
+            // Option 1: Perform full page reload to fetch latest data from DB
+            window.location.reload();
+
+            /*
+            // Option 2: Soft reset filters without full page reload (Uncomment if preferred)
+            document.getElementById("searchWinner").value = "";
+            document.getElementById("filterPrize").value = "";
+            filterTable();
+            setTimeout(() => { if (icon) icon.classList.remove("fa-spin"); }, 300);
+            */
+        });
 
         // Checkbox toggle
         document.querySelectorAll(".rowCheckbox").forEach(cb => {
@@ -76,11 +166,14 @@
             });
         });
 
-        // Select All
+        // Select All (Only checks currently visible rows)
         document.getElementById("selectAll").addEventListener("change", function() {
             document.querySelectorAll(".rowCheckbox").forEach(cb => {
-                cb.checked = this.checked;
-                cb.dispatchEvent(new Event("change"));
+                let row = cb.closest("tr");
+                if (row && row.style.display !== "none") {
+                    cb.checked = this.checked;
+                    cb.dispatchEvent(new Event("change"));
+                }
             });
         });
 

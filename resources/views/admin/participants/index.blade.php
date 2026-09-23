@@ -79,8 +79,9 @@
 
                                 </th>
                                 <th>Full Name</th>
+                                <th>Position</th>
                                 <th>School/Office Name</th>
-                                <th>School/Office Name</th>
+                                <th>Municipality</th>
                                 <th class="text-end" style="width: 120px;">Actions</th>
                             </tr>
                         </thead>
@@ -90,9 +91,10 @@
                                     <td>
                                         <input type="checkbox" class="selectItem" value="{{ $participant->id }}">
                                     </td>
-                                    <td>{{ $participant->firstname . ' ' . $participant->lastname }}</td>
-                                    <td>{{ $participant->office->code . ' ' . $participant->office->name }}</td>
-                                    <td>{{ $participant->office->department->name }}</td>
+                                    <td>{{ $participant->full_name }}</td>
+                                    <td>{{ $participant->designation }}</td>
+                                    <td>{{ $participant->school_office }}</td>
+                                    <td>{{ $participant->municipality }}</td>
                                     <td>
                                         <a href="{{ route('admin.participants.show', $participant) }}"
                                             class="btn btn-sm btn-deped">

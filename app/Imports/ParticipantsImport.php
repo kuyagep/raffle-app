@@ -35,7 +35,7 @@ class ParticipantsImport implements ToModel, WithHeadingRow, WithValidation
 
         return Participant::updateOrCreate(
             [
-                'full_name' => trim($row['full_name']),
+                'full_name' => trim($row['full_name'])
             ],
             [
                 'id'                => strtolower(Str::ulid()),

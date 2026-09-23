@@ -35,12 +35,12 @@
                 <span>Manage Users</span>
             </a>
         </li>
-        <li class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
+        {{-- <li class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
             <a class="nav-link " href="{{ route('admin.events.index') }}">
                 <i class="fas fa-users"></i>
                 <span>Manage Events</span>
             </a>
-        </li>
+        </li> --}}
         <!-- Divider -->
         <hr class="sidebar-divider">
 

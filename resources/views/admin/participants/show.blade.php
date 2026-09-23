@@ -18,16 +18,16 @@
 
                         <dl class="row mb-0">
                             <dt class="col-sm-4">Full Name:</dt>
-                            <dd class="col-sm-8">{{ $participant->firstname . ' ' . $participant->lastname }}</dd>
+                            <dd class="col-sm-8">{{ $participant->full_name }}</dd>
 
                             <dt class="col-sm-4">District/Division:</dt>
-                            <dd class="col-sm-8">{{ $participant->office->department->name }}</dd>
+                            <dd class="col-sm-8">{{ $participant->district_division }}</dd>
 
                             <dt class="col-sm-4">School / Office:</dt>
-                            <dd class="col-sm-8">{{ $participant->office->code . ' ' . $participant->office->name }}</dd>
+                            <dd class="col-sm-8">{{ $participant->school_office }}</dd>
 
                             <dt class="col-sm-4">Position:</dt>
-                            <dd class="col-sm-8">{{ $participant->position ?? '-' }}</dd>
+                            <dd class="col-sm-8">{{ $participant->designation ?? '-' }}</dd>
 
                             <dt class="col-sm-4">Email:</dt>
                             <dd class="col-sm-8">{{ $participant->email ?? '-' }}</dd>

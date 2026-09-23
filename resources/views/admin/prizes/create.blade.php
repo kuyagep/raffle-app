@@ -19,7 +19,7 @@
                             <!-- Prize Name -->
                             <div class="form-group">
                                 <label for="name" class="font-weight-bold">Prize Name</label>
-                                <input type="text" name="name" id="name"
+                                <input type="text" name="name" id="name" placeholder="Enter the prize name"
                                     class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}"
                                     required>
                                 @error('name')
@@ -30,7 +30,7 @@
                             <!-- Quantity -->
                             <div class="form-group">
                                 <label for="quantity" class="font-weight-bold">Quantity</label>
-                                <input type="number" name="quantity" id="quantity"
+                                <input type="number" name="quantity" id="quantity" placeholder="Enter the quantity"
                                     class="form-control @error('quantity') is-invalid @enderror"
                                     value="{{ old('quantity') }}" min="1" required>
                                 @error('quantity')
