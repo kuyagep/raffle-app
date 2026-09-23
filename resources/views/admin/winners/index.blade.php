@@ -5,9 +5,16 @@
         <!-- Page Heading -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0 text-gray-800">Raffle Winners</h1>
-            <button onclick="printSelected()" class="btn btn-sm btn-deped">
-                <i class="fas fa-print"></i> Print Selected
-            </button>
+            <div>
+                <!-- Export to Excel Button -->
+                <button onclick="exportToExcel()" class="btn btn-sm btn-success mr-2" title="Export table data to Excel">
+                    <i class="fas fa-file-excel"></i> Export Excel
+                </button>
+                <!-- Print Selected Button -->
+                <button onclick="printSelected()" class="btn btn-sm btn-deped">
+                    <i class="fas fa-print"></i> Print Selected
+                </button>
+            </div>
         </div>
 
         <div class="card shadow mb-4">
@@ -139,6 +146,50 @@
             setTimeout(() => { if (icon) icon.classList.remove("fa-spin"); }, 300);
             */
         });
+
+        // Export Visible Filtered Data to Excel / CSV
+        function exportToExcel() {
+            let rows = document.querySelectorAll("#winnersTable tbody .winner-row");
+            let csvContent = "\uFEFF"; // BOM for Unicode Excel compatibility
+
+            // Add Header Row
+            csvContent += "Prize,Winner Name,District,School\n";
+
+            let count = 0;
+            rows.forEach(row => {
+                if (row.style.display !== "none") {
+                    let cells = row.querySelectorAll("td");
+                    if (cells.length >= 5) {
+                        let prize = '"' + cells[1].innerText.replace(/"/g, '""').trim() + '"';
+                        let winner = '"' + cells[2].innerText.replace(/"/g, '""').trim() + '"';
+                        let district = '"' + cells[3].innerText.replace(/"/g, '""').trim() + '"';
+                        let school = '"' + cells[4].innerText.replace(/"/g, '""').trim() + '"';
+
+                        csvContent += `${prize},${winner},${district},${school}\n`;
+                        count++;
+                    }
+                }
+            });
+
+            if (count === 0) {
+                Swal.fire("Export Failed", "No visible rows to export.", "warning");
+                return;
+            }
+
+            // Create Blob and trigger direct browser download
+            let blob = new Blob([csvContent], {
+                type: "text/csv;charset=utf-8;"
+            });
+            let link = document.createElement("a");
+            let url = URL.createObjectURL(blob);
+
+            let date = new Date().toISOString().slice(0, 10);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Raffle_Winners_${date}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
         // Checkbox toggle
         document.querySelectorAll(".rowCheckbox").forEach(cb => {
