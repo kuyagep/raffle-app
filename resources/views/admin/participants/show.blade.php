@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title', 'Show Details')
 @section('content')
     <div class="container-fluid">
         <!-- Page Title -->

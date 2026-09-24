@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title', 'Participants')
 @section('content')
     <div class="container-fluid">
         <!-- Page Heading -->

@@ -21,7 +21,7 @@ class RaffleDrawController extends Controller
             ->take(5)
             ->get();
 
-        return view('pages.raffle.draw', compact('participants', 'prizes', 'recentWinners'));
+        return view('pages.raffle.livedraw', compact('participants', 'prizes', 'recentWinners'));
     }
 
     // Start the draw
@@ -64,13 +64,19 @@ class RaffleDrawController extends Controller
 
     // Common winner selection logic
     private function pickWinner(Prize $prize)
+
     {
+
         $winner = null;
 
+
+
         DB::transaction(function () use ($prize, &$winner) {
+
             $winner = Participant::whereNotIn('id', function ($q) {
                 $q->select('participant_id')->from('raffle_winners');
-            })
+            })->where('municipality', 'NOT LIKE', '%Division Office%')
+                ->where('designation', 'Teaching (Permanent)')
                 ->inRandomOrder()
                 ->lockForUpdate()
                 ->first();
@@ -79,11 +85,14 @@ class RaffleDrawController extends Controller
                 throw new \Exception('No eligible participants left.');
             }
 
+
             RaffleWinner::create([
                 'participant_id' => $winner->id,
                 'prize_id'       => $prize->id,
             ]);
         });
+
+
 
         if (!$winner) {
             return response()->json(['error' => 'No eligible participants left.'], 422);
@@ -98,12 +107,17 @@ class RaffleDrawController extends Controller
                 'municipality'      => $winner->municipality,
                 'designation'       => $winner->designation,
             ],
+
             'prize' => [
                 'id' => $prize->id,   // ✅ add this
                 'name' => $prize->name
+
             ]
+
         ]);
     }
+
+
 
     public function recentWinners()
     {

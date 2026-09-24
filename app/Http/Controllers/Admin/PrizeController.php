@@ -7,6 +7,7 @@ use App\Models\Participant;
 use App\Models\Prize;
 use App\Models\RaffleWinner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PrizeController extends Controller
 {
@@ -129,7 +130,10 @@ class PrizeController extends Controller
         return back()->with('success', 'Winners drawn: ' . implode(', ', $drawnWinners));
     }
 
-    public function preDraw(Prize $prize)
+    /**
+     * Advanced Pre-Draw with filters: Municipality, Position, and Custom Count.
+     */
+    public function preDraw(Request $request, Prize $prize)
     {
         $winnersCount = $prize->winners()->count();
 
@@ -137,59 +141,116 @@ class PrizeController extends Controller
             return back()->with('error', 'All winners already drawn for this prize.');
         }
 
-        // Get ALL participants who already won ANY prize
-        $alreadyWinners = RaffleWinner::pluck('participant_id')->toArray();
+        // Validate pre-draw request options
+        $request->validate([
+            'municipality' => 'nullable|string',
+            'position'     => 'nullable|string',
+            'count'        => 'required|integer|min:1',
+        ]);
 
-        // Excluded divisions
-        $excluded = [
+        $maxAllowed = $prize->quantity - $winnersCount;
+        $requestedCount = (int) $request->input('count');
+
+        // Ensure we don't draw more than remaining prize quota
+        $remainingQuantity = min($requestedCount, $maxAllowed);
+
+        // Get IDs of participants who already won ANY prize
+        $alreadyWinners = RaffleWinner::pluck('participant_id');
+
+        // Default excluded divisions (if applicable)
+        $excludedDivisions = [
             'Division Office'
         ];
 
-        // Eligible = never won + not in excluded divisions
-        $eligible = Participant::whereNotIn('id', $alreadyWinners)
-            ->whereNotIn('municipality', $excluded)
-            ->get();
+        // Base Query: Exclude previous winners & excluded divisions
+        $query = Participant::whereNotIn('id', $alreadyWinners)
+            ->whereNotIn('district_division', $excludedDivisions);
 
-        if ($eligible->isEmpty()) {
-            return back()->with('error', 'No eligible participants left for Pre-Draw.');
+        // Filter by Municipality / Exclusions
+        if ($request->filled('municipality')) {
+            if ($request->municipality === 'all_except_division') {
+                // Exclude Division Office from draw
+                $query->where('municipality', '!=', 'Division Office');
+            } elseif ($request->municipality !== 'all') {
+                // Specific municipality chosen
+                $query->where('municipality', $request->municipality);
+            }
         }
 
-        // ✅ Group participants by municipality
-        $grouped = $eligible->groupBy('municipality');
+        // Filter by Position/Designation if specific one selected
+        if ($request->filled('position') && $request->position !== 'all') {
+            $query->where('designation', $request->position);
+        }
 
-        $remaining = $prize->quantity - $winnersCount;
+        $eligible = $query->get();
+
+        if ($eligible->isEmpty()) {
+            return back()->with('error', 'No eligible participants found matching the selected criteria.');
+        }
+
+        // Determine grouping attribute (group by Municipality if "all" selected, otherwise group by Division)
+        $groupKey = ($request->municipality === 'all' || !$request->filled('municipality'))
+            ? 'municipality'
+            : 'district_division';
+
+        // Run raffle inside database transaction
+        $drawnWinners = DB::transaction(function () use ($eligible, $groupKey, $prize, $remainingQuantity) {
+            return $this->distributeWinners($eligible, $groupKey, $prize, $remainingQuantity, true);
+        });
+
+        return back()->with('success', 'Pre-Draw winners drawn (' . count($drawnWinners) . '): ' . implode(', ', $drawnWinners));
+    }
+
+    /**
+     * Helper method to fairly distribute prize draws across a grouped attribute randomly.
+     */
+    private function distributeWinners($eligibleParticipants, string $groupKey, Prize $prize, int $remaining, bool $includeGroupInName = false): array
+    {
+        $grouped = $eligibleParticipants->groupBy($groupKey);
         $drawnWinners = [];
 
-        // Distribute prizes in rounds until we run out
         while ($remaining > 0 && $grouped->isNotEmpty()) {
-            foreach ($grouped as $division => $participants) {
-                if ($remaining <= 0) break;
+            // 1. Get current active group keys and shuffle them randomly for this round
+            $groupKeys = $grouped->keys()->shuffle();
 
-                if ($participants->isEmpty()) {
-                    $grouped->forget($division);
+            foreach ($groupKeys as $groupName) {
+                if ($remaining <= 0) {
+                    break;
+                }
+
+                $participants = $grouped->get($groupName);
+
+                // Skip and remove if empty
+                if (!$participants || $participants->isEmpty()) {
+                    $grouped->forget($groupName);
                     continue;
                 }
 
-                // Random winner from this division
+                // 2. Pick a random winner from this group
                 $winner = $participants->random();
 
                 RaffleWinner::create([
                     'participant_id' => $winner->id,
-                    'prize_id'      => $prize->id,
+                    'prize_id'       => $prize->id,
                 ]);
 
-                $drawnWinners[] = $winner->full_name . " ({$division})";
+                $drawnWinners[] = $includeGroupInName
+                    ? "{$winner->full_name} ({$groupName})"
+                    : $winner->full_name;
+
                 $remaining--;
 
-                // Remove this winner
-                $grouped[$division] = $participants->reject(fn($p) => $p->id === $winner->id);
+                // 3. Remove winner from the group pool
+                $updatedGroup = $participants->reject(fn($p) => $p->id === $winner->id);
 
-                if ($grouped[$division]->isEmpty()) {
-                    $grouped->forget($division);
+                if ($updatedGroup->isEmpty()) {
+                    $grouped->forget($groupName);
+                } else {
+                    $grouped->put($groupName, $updatedGroup);
                 }
             }
         }
 
-        return back()->with('success', 'Pre-Draw winners drawn: ' . implode(', ', $drawnWinners));
+        return $drawnWinners;
     }
 }

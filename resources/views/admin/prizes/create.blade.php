@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title', 'Create Prizes')
 @section('content')
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-3">
