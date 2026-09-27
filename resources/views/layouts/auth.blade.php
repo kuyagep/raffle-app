@@ -6,9 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Authentication') | {{ config('app.name', 'SDO DAVSUR') }}</title>
 
-    <!-- CSS Dependencies -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome & Google Fonts -->
+    <link href="{{ asset('static/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="type/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- SB Admin 2 & Custom App CSS -->
+    <link href="{{ asset('static/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('static/css/app.css') }}" rel="stylesheet">
 
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/favicon/apple-touch-icon.png') }}">
@@ -146,9 +152,17 @@
 
         </div>
 
-        <!-- Developer Credit Footer -->
+        <!-- Developer Credit & Copyright Footer -->
         <div class="text-center mt-3 developer-credit">
-            Developed by <strong>Geperson Mamalias</strong>
+            <span class="small">&copy; {{ date('Y') }} <strong>DepEd Division of Davao del Sur</strong>.
+                All Rights Reserved.</span>
+            <div class="small text-muted mt-1">
+                Developed by
+                <a href="https://github.com/kuyagep" target="_blank" rel="noopener noreferrer"
+                    class="font-weight-bold text-dark text-decoration-none">
+                    KUYAGEP
+                </a>
+            </div>
         </div>
 
     </div>

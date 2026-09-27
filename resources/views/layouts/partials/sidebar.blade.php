@@ -21,7 +21,7 @@
             <span>Dashboard</span>
         </a>
     </li>
-    @if (auth()->user()->role === 'admin')
+    @if (auth()->user()->role === 'admin' || 'superadmin')
         <!-- Nav Item - Registrations -->
         <li class="nav-item {{ request()->routeIs('admin.participants.*') ? 'active' : '' }}">
             <a class="nav-link " href="{{ route('admin.participants.index') }}">
@@ -29,12 +29,14 @@
                 <span>Participants</span>
             </a>
         </li>
-        <li class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-            <a class="nav-link " href="{{ route('admin.users.index') }}">
-                <i class="fas fa-users"></i>
-                <span>Manage Users</span>
-            </a>
-        </li>
+        @if (auth()->user()->role === 'superadmin')
+            <li class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                <a class="nav-link " href="{{ route('admin.users.index') }}">
+                    <i class="fas fa-users"></i>
+                    <span>Manage Users</span>
+                </a>
+            </li>
+        @endif
         {{-- <li class="nav-item {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
             <a class="nav-link " href="{{ route('admin.events.index') }}">
                 <i class="fas fa-users"></i>

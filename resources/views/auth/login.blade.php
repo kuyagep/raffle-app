@@ -19,9 +19,9 @@
         </div>
 
         <div class="form-group mb-3">
-            <input type="password" name="password"
+            <input type="password" name="password" id="password"
                 class="form-control form-control-user @error('password') is-invalid @enderror" placeholder="Password"
-                autocomplete="current-password" required>
+                autocomplete="current-password" value="{{ old('email') }}" required>
             @error('password')
                 <div class="invalid-feedback text-left pl-2">
                     {{ $message }}
@@ -29,14 +29,13 @@
             @enderror
         </div>
 
+        <!-- Show Password Checkbox -->
         <div class="d-flex justify-content-between align-items-center mb-3 pl-1 pr-1">
             <div class="custom-control custom-checkbox small">
-                <input type="checkbox" class="custom-control-input" id="rememberMe" name="remember">
-                <label class="custom-control-label text-muted" for="rememberMe">Remember Me</label>
+                <input type="checkbox" class="custom-control-input" id="showPassword">
+                <label class="custom-control-label text-muted" for="showPassword" style="cursor: pointer;">Show
+                    Password</label>
             </div>
-            @if (Route::has('password.request'))
-                <a class="small font-weight-bold text-danger" href="{{ route('password.request') }}">Forgot Password?</a>
-            @endif
         </div>
 
         <button type="submit" class="btn btn-dark-red btn-user btn-block mt-4">
@@ -47,7 +46,24 @@
     <hr>
 
     <div class="text-center">
+        <span class="small text-muted">v1.0.3</span>
+    </div>
+    {{-- <div class="text-center">
         <span class="small text-muted">Don't have an account? </span>
         <a class="small font-weight-bold text-danger" href="{{ route('register') }}">Create an Account!</a>
-    </div>
+    </div> --}}
 @endsection
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('password');
+            const showPasswordCheckbox = document.getElementById('showPassword');
+
+            if (showPasswordCheckbox && passwordInput) {
+                showPasswordCheckbox.addEventListener('change', function() {
+                    passwordInput.type = this.checked ? 'text' : 'password';
+                });
+            }
+        });
+    </script>
+@endpush

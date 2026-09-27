@@ -12,11 +12,14 @@ use App\Http\Controllers\PreRegistrationController;
 use App\Http\Controllers\RaffleDrawController;
 use App\Http\Controllers\WinnerController;
 use App\Http\Middleware\RoleMiddleware;
-
+use Illuminate\Support\Facades\Auth;
 
 // Public Landing Page
 Route::get('/', function () {
-    return view('landing');
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
+    return redirect()->route('admin.dashboard');
 });
 
 /*
@@ -49,7 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     | Specific Admin Routes (Protected by role:admin)
     |--------------------------------------------------------------------------
     */
-    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['role:admin,superadmin'])->prefix('admin')->name('admin.')->group(function () {
 
         // Example admin management routes
         // Route::resource('events', AdminEventController::class);

@@ -14,14 +14,14 @@
 
                 <!-- Export Excel Button -->
                 <a href="{{ route('admin.participants.export') }}" class="btn mr-1 btn-deped btn-sm fw-bold px-3"
-                    title="Export Excel">
+                    title="Export Participants">
                     <i class="fas fa-file-excel me-1"></i>
                     <span class="d-none d-sm-inline">Export</span>
                 </a>
 
                 <!-- Import Excel Button -->
                 <button type="button" class="btn mr-1 btn-deped btn-sm fw-bold px-3" data-toggle="modal"
-                    data-target="#importModal" title="Import Excel">
+                    data-target="#importModal" title="Import Participants">
                     <i class="fas fa-upload me-1"></i>
                     <span class="d-none d-sm-inline">Import</span>
                 </button>
