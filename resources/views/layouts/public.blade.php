@@ -4,16 +4,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Raffle Winners - National Teachers' Day 2025</title>
+    <title>Raffle Winners - National Teachers' Day 2026</title>
 
     <!-- SB Admin 2 CSS -->
     <link href="{{ asset('static/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
     <link href="{{ asset('static/css/sb-admin-2.min.css') }}" rel="stylesheet">
-        <link rel="apple-touch-icon" sizes="180x180" href="{{asset("images/favicon/apple-touch-icon.png")}}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{asset("images/favicon/favicon-32x32.png")}}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{asset("images/favicon/favicon-16x16.png")}}">
-    <link rel="manifest" href="{{asset("images/favicon/site.webmanifest")}}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('images/favicon/site.webmanifest') }}">
 
+    {{-- <!-- Bootstrap 5 CSS (For form-select and utility class support) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
     <!-- Google Fonts: Roboto -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
@@ -28,24 +30,25 @@
         body {
             /* background-color: #003399; */
         }
+
         .bg-primary {
             background-color: #003399 !important;
         }
+
         .text-primary {
             color: #003399 !important;
         }
+
         .table thead th {
             background-color: #003399;
             color: #fff;
         }
-
-
     </style>
 </head>
 
-<body >
+<body>
 
-    <div class="container py-5">
+    <div class="container">
         @yield('content')
     </div>
 
@@ -54,4 +57,5 @@
     <script src="{{ asset('static/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('static/js/sb-admin-2.min.js') }}"></script>
 </body>
+
 </html>

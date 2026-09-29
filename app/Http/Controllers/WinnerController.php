@@ -28,10 +28,23 @@ class WinnerController extends Controller
         return view('admin.winners.print', compact('winners'));
     }
 
-    public function winners()
+    public function winners(Request $request)
     {
-        $prizes = Prize::with(['winners.participant'])->get();
+        // Fetch all prizes for the filter dropdown
+        $allPrizes = Prize::orderBy('name')->get();
 
-        return view('pages.raffle.winners', compact('prizes'));
+        // Query winners with eager loaded participant and prize relationships
+        $query = RaffleWinner::with(['participant', 'prize'])
+            ->latest('created_at'); // or latest('id')
+
+        // Apply Prize Filter if selected
+        if ($request->filled('prize_id')) {
+            $query->where('prize_id', $request->prize_id);
+        }
+
+        // Paginate results (12 cards per page fits nicely in a 3-column grid)
+        $winners = $query->paginate(6)->withQueryString();
+
+        return view('pages.raffle.winners', compact('winners', 'allPrizes'));
     }
 }

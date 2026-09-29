@@ -211,18 +211,7 @@
         </tbody>
     </table>
 
-    <!-- Official Signatory / Audit Block (Appears after data) -->
-    <div class="signatory-container">
-        <table class="signatory-table">
-            <tr>
-                <td>
-                    <div class="sign-title">Prepared by:</div>
-                    <div class="sign-name">JUAN DELA CRUZ</div>
-                    <div class="sign-position">Raffle Committee Secretariat</div>
-                </td>
-            </tr>
-        </table>
-    </div>
+
 
     <script>
         // Automatic cleanup script post-print

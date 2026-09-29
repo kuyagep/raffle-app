@@ -46,7 +46,7 @@
     <hr>
 
     <div class="text-center">
-        <span class="small text-muted">v1.0.3</span>
+        <span class="small text-muted">{{ config('app.version') }}</span>
     </div>
     {{-- <div class="text-center">
         <span class="small text-muted">Don't have an account? </span>

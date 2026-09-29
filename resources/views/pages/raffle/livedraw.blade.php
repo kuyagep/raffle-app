@@ -16,7 +16,8 @@
 
     <!-- Google Fonts: Roboto -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
+    <!-- Bootstrap 5 CSS (For form-select and utility class support) -->
+    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
     <style>
         body {
             font-family: 'Roboto', sans-serif !important;
@@ -103,15 +104,20 @@
             <select id="prize_id" class="form-control w-50 mx-auto">
                 <option value="">-- Select Prize --</option>
                 @foreach ($prizes as $prize)
-                    <option value="{{ $prize->id }}">
-                        {{ $prize->name }} (Remaining: {{ $prize->quantity - $prize->winners()->count() }})
-                    </option>
+                    @php
+                        $remaining = $prize->quantity - $prize->winners()->count();
+                    @endphp
+                    @if ($remaining > 0)
+                        <option value="{{ $prize->id }}">
+                            {{ $prize->name }} (Remaining: {{ $remaining }})
+                        </option>
+                    @endif
                 @endforeach
             </select>
         </div>
 
         <!-- Rolling Animation -->
-        <div id="rolling" class="rolling mt-5 mb-5">Press Start to Begin</div>
+        <div id="rolling" class="rolling mt-5 mb-5 text-uppercase">Press Start to Begin</div>
 
         <!-- Final Winner -->
         <h1 id="winner" class="winner mt-5"></h1>
@@ -121,20 +127,50 @@
 
         <!-- Recent Winners -->
         <div class="recent-winners mt-5 mb-5">
-            <h3 class="text-white mb-2">🏆
-                <a href="{{ route('public.winners') }}" class="text-white">Recent Winners</a>
+            <h3 class="text-white mb-3 text-center">🏆
+                <a href="{{ route('public.winners') }}" class="text-white text-decoration-none fw-bold">Recent
+                    Winners</a>
             </h3>
-            <ul class="list-group w-75 mx-auto" id="recentWinnersList">
+
+            <div class="row g-2 justify-content-center row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-1"
+                id="recentWinnersList">
                 @forelse($recentWinners as $rw)
-                    <li class="list-group-item d-flex justify-content-between text-dark">
-                        <span><b>{{ $rw->participant->full_name }}</b> -
-                            {{ $rw->participant->district_division }}</span>
-                        <span class="badge badge-success">{{ $rw->prize->name }}</span>
-                    </li>
+                    <div class="col mb-2">
+                        <div class="card  h-100 shadow-sm border-0 border-top border-3 border-success text-dark">
+                            <div class="card-body p-2 text-center d-flex flex-column justify-content-between">
+                                <div>
+
+                                    <!-- Full Name (Uppercase) -->
+                                    <h6 class="fw-bold text-dark mb-1 lh-sm text-truncate small text-uppercase"
+                                        title="{{ $rw->participant->full_name }}">
+                                        <b>{{ $rw->participant->full_name }}</b>
+                                    </h6>
+
+                                    <!-- District / Division -->
+                                    <p class="text-muted text-truncate mb-1" style="font-size: 0.75rem;">
+                                        <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                        {{ $rw->participant->district_division ?? 'N/A' }}
+                                    </p>
+                                </div>
+
+                                <!-- Prize Badge -->
+                                <div class="pt-1 border-top mt-1">
+                                    <span class="badge badge-success bg-success text-white text-truncate "
+                                        style="font-size: 0.7rem;" title="{{ $rw->prize->name }}">
+                                        <i class="fas fa-gift mr-1"></i> {{ $rw->prize->name }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @empty
-                    <li class="list-group-item text-muted">No winners yet.</li>
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0 py-3 text-center">
+                            <span class="text-muted small">No winners yet.</span>
+                        </div>
+                    </div>
                 @endforelse
-            </ul>
+            </div>
         </div>
         <div><span class="text-white">Developed by: Geperson Mamalias</span></div>
     </div>
@@ -196,7 +232,7 @@
                 <div class="card bg-light text-dark mx-auto" style="max-width: 500px;">
                     <div class="card-body text-center">
                         <h2 class="card-title mb-3">🏆 Winner!</h2>
-                        <h3 class="font-weight-bold mb-2">${finalWinner.full_name}</h3>
+                        <h3 class="font-weight-bold mb-2 text-uppercase">${finalWinner.full_name}</h3>
                         ${finalWinner.designation ? `<p class="mb-1 text-muted">${finalWinner.designation}</p>` : ''}
                         <p class="mb-1">${finalWinner.school_office}</p>
                         <p class="mb-3">${finalWinner.district_division}</p>
@@ -245,15 +281,48 @@
         function loadRecentWinners() {
             $.get("{{ route('raffle.recentWinners') }}", function(data) {
                 let html = "";
-                if (data.length > 0) {
+                if (data && data.length > 0) {
                     data.forEach(w => {
-                        html += `<li class="list-group-item d-flex justify-content-between text-dark">
-                                    <span><b>${w.participant.full_name}</b> - ${w.participant.district_division}</span>
-                                    <span class="badge badge-success">${w.prize.name}</span>
-                                </li>`;
+                        let fullName = w.participant ? w.participant.full_name : 'N/A';
+                        let fullNameUpper = fullName.toUpperCase();
+                        let district = (w.participant && w.participant.district_division) ? w.participant
+                            .district_division : 'N/A';
+                        let prizeName = w.prize ? w.prize.name : 'Prize';
+
+                        html += `
+                <div class="col mb-2">
+                    <div class="card h-100 shadow-sm border-0 border-top border-3 border-success text-dark">
+                        <div class="card-body p-2 text-center d-flex flex-column justify-content-between">
+                            <div>
+
+
+                                <h6 class="fw-bold text-dark mb-1 lh-sm text-truncate small text-uppercase"
+                                    title="${fullName}">
+                                    <b>${fullNameUpper}</b>
+                                </h6>
+
+                                <p class="text-muted text-truncate mb-1" style="font-size: 0.75rem;">
+                                    <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                    ${district}
+                                </p>
+                            </div>
+
+                            <div class="pt-1 border-top mt-1">
+                                <span class="badge badge-success bg-success text-white text-truncate " style="font-size: 0.7rem;" title="${prizeName}">
+                                    <i class="fas fa-gift mr-1"></i>${prizeName}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
                     });
                 } else {
-                    html = `<li class="list-group-item text-muted">No winners yet.</li>`;
+                    html = `
+            <div class="col-12">
+                <div class="card shadow-sm border-0 py-3 text-center">
+                    <span class="text-muted small">No winners yet.</span>
+                </div>
+            </div>`;
                 }
                 $("#recentWinnersList").html(html);
             });
@@ -262,12 +331,18 @@
         function updatePrizeOptions() {
             $.get("{{ route('raffle.prizesRemaining') }}", function(data) {
                 let $select = $('#prize_id');
+                let selectedPrizeId = $select.val(); // Keep current selection if still available
+
                 $select.empty().append('<option value="">-- Select Prize --</option>');
+
                 data.forEach(prize => {
-                    let disabled = prize.remaining <= 0 ? 'disabled' : '';
-                    $select.append(`<option value="${prize.id}" ${disabled}>
-                        ${prize.name} (Remaining: ${prize.remaining})
-                    </option>`);
+                    // Only add option if there are remaining items left
+                    if (prize.remaining > 0) {
+                        let isSelected = (prize.id == selectedPrizeId) ? 'selected' : '';
+                        $select.append(`<option value="${prize.id}" ${isSelected}>
+                    ${prize.name} (Remaining: ${prize.remaining})
+                </option>`);
+                    }
                 });
             });
         }

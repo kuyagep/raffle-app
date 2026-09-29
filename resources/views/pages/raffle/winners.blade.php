@@ -1,47 +1,108 @@
 @extends('layouts.public')
 
 @section('content')
-    <div class="text-center mb-5 ">
-        <h1 class="h3"><i class="fas fa-trophy text-warning"></i> <span class="text-primary"><strong><a href="{{route("raffle.draw")}}" class="text-primary">Raffle Winners</a></strong></span></h1>
-        <p class="text-primary">National Teachers' Day 2025 Celebration</p>
-    </div>
+    <div class="min-vh-100 d-flex flex-column justify-content-between py-3">
 
-    @foreach($prizes as $prize)
-        <div class="card mb-5 card-primary">
-            <div class="card-header py-3 bg-primary">
-                <h6 class="m-0 font-weight-bold text-white">
-                    {{ $prize->name }}
-                    <span class="badge bg-light text-dark">{{ $prize->quantity }} Winners</span>
-                </h6>
+        <div>
+            <!-- Header Section -->
+            <div class="text-center mb-3">
+                <h1 class="h4 mb-1">
+                    <i class="fas fa-trophy text-warning me-1"></i>
+                    <a href="{{ route('raffle.draw') }}" class="text-primary text-decoration-none fw-bold">
+                        Raffle Winners
+                    </a>
+                </h1>
+                <p class="text-muted small mb-0">2026 World Teachers' Day Grand Raffle Draw</p>
             </div>
-            <div class="card-body">
-                @if($prize->winners->count() > 0)
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped table-hover align-middle mb-0">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Winner Name</th>
-                                    <th>School / Office</th>
-                                    <th>District / Division</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($prize->winners as $index => $winner)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td class="fw-bold text-primary">{{ $winner->participant->full_name }}</td>
-                                        <td>{{ $winner->participant->school_office }}</td>
-                                        <td>{{ $winner->participant->district_division }}</td>
-                                    </tr>
+
+            <!-- Prize Filter Bar -->
+            <div class="row justify-content-center mb-3">
+                <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+                    <form method="GET" action="{{ url()->current() }}" id="filterForm">
+                        <div class="input-group input-group-sm">
+                            <label class="input-group-text bg-primary text-white " for="prize_id">
+                                <i class="fas fa-filter me-1 text-sm"></i>
+                            </label>
+                            <select name="prize_id" id="prize_id" class="form-control border-secondary"
+                                onchange="document.getElementById('filterForm').submit();">
+                                <option value="">-- All Prizes --</option>
+                                @foreach ($allPrizes as $prize)
+                                    <option value="{{ $prize->id }}"
+                                        {{ request('prize_id') == $prize->id ? 'selected' : '' }}>
+                                        {{ $prize->name }}
+                                    </option>
                                 @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <p class="text-muted mb-0">No winners drawn yet for this prize.</p>
-                @endif
+                            </select>
+                            @if (request('prize_id'))
+                                <a href="{{ url()->current() }}" class="btn btn-outline-secondary btn-sm "
+                                    title="Clear Filter">
+                                    <i class="fas fa-times "></i>
+                                </a>
+                            @endif
+                        </div>
+                    </form>
+                </div>
             </div>
+
+            <!-- Winners Compact Cards Grid -->
+            @if ($winners->count() > 0)
+                <div class="row g-2 row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-2">
+                    @foreach ($winners as $winner)
+                        <div class="col mb-2">
+                            <div class="card h-100 border-1 border-top border-3 ">
+                                <div class="card-body p-2 text-center d-flex flex-column justify-content-between">
+                                    <div>
+                                        <!-- Winner Icon -->
+                                        {{-- <div class="mb-1">
+                                            <div class="bg-light text-primary rounded-circle d-inline-flex align-items-center justify-content-center"
+                                                style="width: 32px; height: 32px;">
+                                                <i class="fas fa-user small"></i>
+                                            </div>
+                                        </div> --}}
+
+                                        <!-- Full Name -->
+                                        <h4 class="fw-bold text-dark mb-1  text-truncate text-uppercase"
+                                            title="{{ $winner->participant->full_name }}">
+                                            <b>{{ $winner->participant->full_name }}</b>
+                                        </h4>
+
+                                        <!-- District / Division -->
+                                        <h6 class="text-truncate mb-1 text-dark">
+                                            <i class="fas fa-map-marker-alt text-danger mr-1"></i>
+                                            {{ $winner->participant->district_division ?? 'N/A' }}
+                                        </h6>
+                                    </div>
+
+                                    <!-- Prize Badge -->
+                                    <div class="pt-1 border-top mt-1">
+                                        <span class="badge bg-warning text-dark text-truncate w-100"
+                                            style="font-size: 0.7rem;" title="{{ $winner->prize->name ?? 'Prize' }}">
+                                            <i class="fas fa-gift mr-1"></i>{{ $winner->prize->name ?? 'Prize' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <!-- Empty State -->
+                <div class="card shadow-sm border-0 my-4">
+                    <div class="card-body text-center py-4">
+                        <i class="fas fa-award fa-2x text-muted mb-2"></i>
+                        <h6 class="text-secondary mb-1">No winners found</h6>
+                        <p class="text-muted small mb-0">Try selecting a different prize filter or draw a winner first.</p>
+                    </div>
+                </div>
+            @endif
         </div>
-    @endforeach
+
+        <!-- Pagination Links pinned towards bottom -->
+        @if ($winners->count() > 0)
+            <div class="d-flex justify-content-center mt-3">
+                {{ $winners->links() }}
+            </div>
+        @endif
+
+    </div>
 @endsection
