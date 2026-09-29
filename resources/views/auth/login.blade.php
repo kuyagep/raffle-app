@@ -43,11 +43,11 @@
         </button>
     </form>
 
-    <hr>
+    {{-- <hr> --}}
 
-    <div class="text-center">
+    {{-- <div class="text-center">
         <span class="small text-muted">{{ config('app.version') }}</span>
-    </div>
+    </div> --}}
     {{-- <div class="text-center">
         <span class="small text-muted">Don't have an account? </span>
         <a class="small font-weight-bold text-danger" href="{{ route('register') }}">Create an Account!</a>
