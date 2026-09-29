@@ -44,9 +44,11 @@
             color: #fff;
         }
     </style>
+
+    @stack('styles')
 </head>
 
-<body>
+<body class="bg-primary">
 
     <div class="container">
         @yield('content')

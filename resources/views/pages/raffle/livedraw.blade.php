@@ -90,6 +90,126 @@
         .recent-winners h3 {
             color: #0dcaf0;
         }
+
+        /* Container for bottom floating icons */
+        .floating-bg-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Floating Icon Styles */
+        .floating-icon {
+            position: absolute;
+            bottom: -40px;
+            font-size: 1.8rem;
+            opacity: 0.6;
+            animation: floatUp 6s linear infinite;
+        }
+
+        /* Color Themes */
+        .icon-gift {
+            color: #ff4757;
+        }
+
+        .icon-cash {
+            color: #2ed573;
+        }
+
+        .icon-ticket {
+            color: #ffa502;
+        }
+
+        .icon-trophy {
+            color: #eccc68;
+        }
+
+        /* Keyframe for upward floating animation */
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 0.7;
+            }
+
+            80% {
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: translateY(-130px) rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* Staggered positions & delays for continuous natural movement */
+        .floating-icon:nth-child(1) {
+            left: 5%;
+            animation-delay: 0s;
+            animation-duration: 5.5s;
+        }
+
+        .floating-icon:nth-child(2) {
+            left: 15%;
+            animation-delay: 1.2s;
+            animation-duration: 6.5s;
+        }
+
+        .floating-icon:nth-child(3) {
+            left: 25%;
+            animation-delay: 2.5s;
+            animation-duration: 5.0s;
+        }
+
+        .floating-icon:nth-child(4) {
+            left: 35%;
+            animation-delay: 0.8s;
+            animation-duration: 7.0s;
+        }
+
+        .floating-icon:nth-child(5) {
+            left: 45%;
+            animation-delay: 3.1s;
+            animation-duration: 5.8s;
+        }
+
+        .floating-icon:nth-child(6) {
+            left: 55%;
+            animation-delay: 1.8s;
+            animation-duration: 6.2s;
+        }
+
+        .floating-icon:nth-child(7) {
+            left: 65%;
+            animation-delay: 2.2s;
+            animation-duration: 5.2s;
+        }
+
+        .floating-icon:nth-child(8) {
+            left: 75%;
+            animation-delay: 0.4s;
+            animation-duration: 6.8s;
+        }
+
+        .floating-icon:nth-child(9) {
+            left: 85%;
+            animation-delay: 3.5s;
+            animation-duration: 5.4s;
+        }
+
+        .floating-icon:nth-child(10) {
+            left: 95%;
+            animation-delay: 1.5s;
+            animation-duration: 6.0s;
+        }
     </style>
 </head>
 
@@ -173,6 +293,20 @@
             </div>
         </div>
         <div><span class="text-white">Developed by: Geperson Mamalias</span></div>
+    </div>
+
+    <!-- Floating Gifts, Cash & Raffle Bottom Animation -->
+    <div class="floating-bg-container">
+        <i class="fas fa-gift floating-icon icon-gift"></i>
+        <i class="fas fa-money-bill-wave floating-icon icon-cash"></i>
+        <i class="fas fa-ticket-alt floating-icon icon-ticket"></i>
+        <i class="fas fa-coins floating-icon icon-cash"></i>
+        <i class="fas fa-trophy floating-icon icon-trophy"></i>
+        <i class="fas fa-gift floating-icon icon-gift"></i>
+        <i class="fas fa-money-check-alt floating-icon icon-cash"></i>
+        <i class="fas fa-ticket-alt floating-icon icon-ticket"></i>
+        <i class="fas fa-gift floating-icon icon-gift"></i>
+        <i class="fas fa-coins floating-icon icon-cash"></i>
     </div>
 
     <!-- Confetti JS -->
