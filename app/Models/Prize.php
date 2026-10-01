@@ -15,4 +15,8 @@ class Prize extends Model
     {
         return $this->hasMany(RaffleWinner::class);
     }
+    public function schoolRaffleWinners()
+    {
+        return $this->hasMany(RaffleWinner::class);
+    }
 }

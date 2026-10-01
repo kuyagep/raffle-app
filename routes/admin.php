@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ParticipantController;
 use App\Http\Controllers\Admin\PrizeController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\SchoolRaffleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WinnerController;
 use Illuminate\Support\Facades\Route;
@@ -43,4 +45,10 @@ Route::middleware(['auth', 'role:admin,superadmin'])->prefix('admin')->name('adm
     Route::post('/events', [EventController::class, 'store'])->name('events.store');
 
     Route::get('/events/{id}/participants', [EventController::class, 'participants'])->name('events.participants');
+
+    Route::get('/school-winners/print', [SchoolRaffleController::class, 'print'])->name('school-winners.print');
+    Route::get('/school-winners', [SchoolRaffleController::class, 'indexWinners'])->name('school-winners.index');
+    Route::get('schools/download-template', [SchoolController::class, 'downloadTemplate'])->name('schools.downloadTemplate');
+    Route::post('schools/import', [SchoolController::class, 'import'])->name('schools.import');
+    Route::resource('schools', SchoolController::class);
 });

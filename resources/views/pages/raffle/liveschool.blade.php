@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raffle Draw</title>
-    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
     <link href="{{ asset('static/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
     <link href="{{ asset('static/css/sb-admin-2.min.css') }}" rel="stylesheet">
 
@@ -214,30 +214,29 @@
 </head>
 
 <body>
+
     <div class="container">
 
-        <h1 class="mb-4"><a href="/raffle/school-live" class="text-white text-decoration-none fw-bold"><b>Grand Raffle
+        <h1 class="mb-4"><a href="/raffle" class="text-white text-decoration-none fw-bold"><b>Grand Raffle
                     Draw</b></a></h1>
 
         <!-- Prize Selection -->
-        <div class="form-group mb-5">
-            <label for="prize_id">Select Prize</label>
+        <div class="form-group mb-5 text-center">
+            <label for="prize_id" class="font-weight-bold">Select Prize</label>
             <select id="prize_id" class="form-control w-50 mx-auto">
                 <option value="">-- Select Prize --</option>
                 @foreach ($prizes as $prize)
                     @php
-                        $claimed = $prize->school_raffle_winners_count ?? $prize->winners()->count();
+                        // Use schoolRaffleWinners relationship count
+                        $claimed = $prize->school_raffle_winners_count ?? $prize->schoolRaffleWinners()->count();
                         $remaining = max(0, $prize->quantity - $claimed);
                     @endphp
-                    @if ($remaining > 0)
-                        <option value="{{ $prize->id }}">
-                            {{ $prize->name }} {{ $remaining == 0 ? '(Out of Stock)' : "(Remaining: {$remaining})" }}
-                        </option>
-                    @endif
+                    <option value="{{ $prize->id }}" {{ $remaining == 0 ? 'disabled' : '' }}>
+                        {{ $prize->name }} {{ $remaining == 0 ? '(Out of Stock)' : "(Remaining: {$remaining})" }}
+                    </option>
                 @endforeach
             </select>
         </div>
-
 
         <!-- Rolling Animation -->
         <div id="rolling" class="rolling mt-5 mb-5 text-uppercase">Press Start to Begin</div>
@@ -245,9 +244,8 @@
         <!-- Final Winner -->
         <h1 id="winner" class="winner mt-5"></h1>
 
-        <button id="startBtn" class="btn btn-lg bg-success text-white">Start Draw</button>
-        <button id="redrawBtn" class="btn bg-danger btn-lg d-none text-white">Redraw Prize</button>
-        <a href="/raffle/school-live" class="btn bg-secondary btn-lg d-none text-white">Switch</a>
+        <button id="startBtn" class="btn btn-lg bg-gradient-success text-white">Start Draw</button>
+        <button id="redrawBtn" class="btn bg-gradient-danger btn-lg d-none text-white">Redraw Prize</button>
 
         <!-- Recent Winners -->
         <div class="recent-winners mt-5 mb-5">
@@ -266,12 +264,12 @@
 
                                     <!-- Full Name (Uppercase) -->
                                     <h4 class="fw-bold text-dark mb-1 text-truncate text-uppercase">
-                                        <b>{{ $rw->participant->full_name }}</b>
+                                        <b>{{ $rw->school->school_name }}</b>
                                     </h4>
 
                                     <!-- District / Division -->
                                     <h6 class="text-muted text-truncate mb-1">
-                                        {{ $rw->participant->district_division ?? 'N/A' }}
+                                        {{ $rw->school->district_name ?? 'N/A' }}
                                     </h6>
                                 </div>
 
@@ -368,10 +366,8 @@
                 <div class="card bg-light text-dark mx-auto" style="max-width: 500px;">
                     <div class="card-body text-center">
                         <h2 class="card-title mb-3">🏆 Winner!</h2>
-                        <h3 class="font-weight-bold mb-2 text-uppercase">${finalWinner.full_name}</h3>
-                        ${finalWinner.designation ? `<p class="mb-1 text-muted">${finalWinner.designation}</p>` : ''}
-                        <p class="mb-1">${finalWinner.school_office}</p>
-                        <p class="mb-3">${finalWinner.district_division}</p>
+                        <h3 class="font-weight-bold mb-2 text-uppercase">${finalWinner.school_name}</h3>
+                        <p class="mb-1">${finalWinner.municipality}</p>
                         <hr>
                         <p class="mb-0">
                             Prize: <span class="badge badge-success p-2">${prize.name}</span>
@@ -415,14 +411,13 @@
         }
 
         function loadRecentWinners() {
-            $.get("{{ route('raffle.recentWinners') }}", function(data) {
+            $.get("{{ route('raffle.school.recentWinners') }}", function(data) {
                 let html = "";
                 if (data && data.length > 0) {
                     data.forEach(w => {
-                        let fullName = w.participant ? w.participant.full_name : 'N/A';
+                        let fullName = w.school ? w.school.school_name : 'N/A';
                         let fullNameUpper = fullName.toUpperCase();
-                        let district = (w.participant && w.participant.district_division) ? w.participant
-                            .district_division : 'N/A';
+                        let district = (w.school && w.school.school_name) ? w.school.municipality : 'N/A';
                         let prizeName = w.prize ? w.prize.name : 'Prize';
 
                         html += `
@@ -485,6 +480,7 @@
 
         $('#startBtn').click(function() {
             let prizeId = $('#prize_id').val();
+
             if (!prizeId) {
                 Swal.fire({
                     icon: 'warning',
@@ -495,79 +491,112 @@
                 return;
             }
 
-            $(this).prop("disabled", true).text("Drawing...");
+            let $btn = $(this);
+            $btn.prop("disabled", true).text("Drawing...");
 
-            $.get("{{ route('raffle.checkPrize') }}", {
-                prize_id: prizeId
-            }, function(data) {
-                if (data.remaining <= 0) {
-                    stopAllSounds();
+            // 1. Fetch eligible school list for rolling animation
+            $.get("{{ route('schools.eligibleList') }}", function(schools) {
+                if (!schools || schools.length === 0) {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'No More Winners',
-                        text: 'All winners for this prize have already been drawn!',
-                        confirmButtonColor: '#d33'
+                        icon: 'info',
+                        title: 'No Schools Available',
+                        text: 'There are no remaining eligible schools for the draw.',
+                        confirmButtonColor: '#003399'
                     });
-                    $('#startBtn').prop("disabled", false).text("Start Draw");
+                    $btn.prop("disabled", false).text("Start Draw");
                     return;
                 }
 
-                $.get("{{ route('participants.list') }}", function(data) {
-                    if (data.length === 0) {
+                // 2. Start rolling animation with school names
+                let schoolNames = schools.map(s => s.school_name.toUpperCase());
+                startRolling(schoolNames);
+
+                // 3. Send POST request to pick a winner while animation is playing
+                let drawRequest = $.post("{{ route('raffle.school.draw') }}", {
+                    _token: "{{ csrf_token() }}",
+                    prize_id: prizeId
+                });
+
+                // 4. Reveal result after animation delay (e.g., 4 seconds)
+                setTimeout(() => {
+                    drawRequest.done(function(response) {
+                        // Stop rolling animation and pass school object
+                        stopRolling(response.winner, response.prize);
+
                         Swal.fire({
-                            icon: 'info',
-                            title: 'No Participants',
-                            text: 'There are no participants available for the draw.',
+                            icon: 'success',
+                            title: '🎉 Winning School Drawn! 🎉',
+                            html: `
+                        <h2 class="text-primary mt-2"><strong>${response.winner.school_name}</strong></h2>
+                        <span class="text-dark font-weight-bold">
+                            <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                            ${response.winner.district_name} - ${response.winner.municipality}
+                        </span><br>
+                        ${response.winner.school_office ? `<small class="text-muted">Office: ${response.winner.school_office}</small><br>` : ''}
+                        ${response.winner.contact_number ? `<small class="text-muted">Contact: ${response.winner.contact_number}</small><br>` : ''}
+                        <hr>
+                        <span><b>Prize:</b> <span class="badge badge-success px-3 py-2">${response.prize.name}</span></span>
+                    `,
                             confirmButtonColor: '#003399'
                         });
-                        $('#startBtn').prop("disabled", false).text("Start Draw");
-                        return;
-                    }
 
-                    startRolling(data.map(p => p.full_name));
+                        // Update UI elements
+                        loadRecentWinners();
+                        updatePrizeOption(prizeId);
+                        $btn.prop("disabled", false).text("Start Draw");
 
-                    setTimeout(() => {
-                        $.post("{{ route('raffle.start') }}", {
-                            _token: "{{ csrf_token() }}",
-                            prize_id: prizeId
-                        }, function(response) {
-                            stopRolling(response.winner, response.prize);
-
-                            Swal.fire({
-                                icon: 'success',
-                                title: '🎉 We have a Winner! 🎉',
-                                html: `
-                                    <h2><strong>${response.winner.full_name}</strong></h2>
-                                    ${response.winner.designation ? `<span>${response.winner.designation}</span>` : ''}<br>
-                                    <span>${response.winner.school_office}</span><br>
-                                    <span>${response.winner.district_division}</span>
-                                    <hr>
-                                    <span><b>Prize:</b> <span class="badge badge-success">${response.prize.name}</span></span>
-                                `,
-                                confirmButtonColor: '#003399'
-                            });
-
-                            loadRecentWinners();
-                            $('#startBtn').prop("disabled", false).text(
-                                "Start Draw");
-                        }).fail(function(xhr) {
+                    }).fail(function(xhr) {
+                        if (typeof rollingInterval !== 'undefined') {
                             clearInterval(rollingInterval);
+                        }
+                        if (typeof stopAllSounds === 'function') {
                             stopAllSounds();
-                            $('#rolling').hide();
+                        }
+                        $('#rolling').hide();
 
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Draw Failed',
-                                text: xhr.responseJSON.error,
-                                confirmButtonColor: '#d33'
-                            });
-                            $('#startBtn').prop("disabled", false).text(
-                                "Start Draw");
+                        let errorMsg = xhr.responseJSON && xhr.responseJSON.error ?
+                            xhr.responseJSON.error :
+                            'An error occurred during the draw.';
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Draw Failed',
+                            text: errorMsg,
+                            confirmButtonColor: '#d33'
                         });
-                    }, 5000);
+
+                        $btn.prop("disabled", false).text("Start Draw");
+                    });
+                }, 1000); // 4-second animation delay
+
+            }).fail(function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Request Failed',
+                    text: 'Unable to fetch eligible schools list.',
+                    confirmButtonColor: '#d33'
                 });
+                $btn.prop("disabled", false).text("Start Draw");
             });
         });
+
+        // Helper function to update dropdown quantity locally
+        function updatePrizeOption(prizeId) {
+            let $opt = $(`#prize_id option[value="${prizeId}"]`);
+            if ($opt.length) {
+                let text = $opt.text();
+                let match = text.match(/\(Remaining:\s*(\d+)\)/);
+                if (match) {
+                    let count = parseInt(match[1]) - 1;
+                    if (count <= 0) {
+                        $opt.text(text.replace(/\(Remaining:\s*\d+\)/, '(Out of Stock)')).prop('disabled', true);
+                        $('#prize_id').val('');
+                    } else {
+                        $opt.text(text.replace(/\(Remaining:\s*\d+\)/, `(Remaining: ${count})`));
+                    }
+                }
+            }
+        }
 
         $('#redrawBtn').click(function() {
             if (!currentPrizeId || !currentWinnerId) {
@@ -580,9 +609,11 @@
                 return;
             }
 
+            let $btn = $(this);
+
             Swal.fire({
                 title: 'Are you sure?',
-                text: "This will replace the current winner with a new one.",
+                text: "This will replace the current winning school with a new one.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -591,66 +622,99 @@
             }).then((result) => {
                 if (result.isConfirmed) {
 
-                    // ✅ Step 1: Get all remaining participants for this prize
-                    $.get("{{ route('participants.list') }}", {
+                    $btn.prop("disabled", true).text("Redrawing...");
+
+                    // ✅ Step 1: Get remaining eligible schools
+                    $.get("{{ route('schools.eligibleList') }}", {
                         prize_id: currentPrizeId
                     }, function(data) {
-                        if (data.length === 0) {
+                        if (!data || data.length === 0) {
                             Swal.fire({
                                 icon: 'info',
-                                title: 'No Participants',
-                                text: 'There are no participants left for redraw.',
+                                title: 'No Eligible Schools',
+                                text: 'There are no remaining schools available for redraw.',
                                 confirmButtonColor: '#003399'
                             });
+                            $btn.prop("disabled", false).text("Redraw Winner");
                             return;
                         }
 
-                        // ✅ Step 2: Start rolling animation
-                        startRolling(data.map(p => p.full_name));
+                        // ✅ Step 2: Start rolling animation with school names
+                        let schoolNames = data.map(p => p.school_name.toUpperCase());
+                        startRolling(schoolNames);
 
-                        // ✅ Step 3: After 5 seconds, call redraw API
+                        // ✅ Step 3: Trigger backend redraw endpoint
+                        let redrawRequest = $.post("{{ route('raffle.school.redraw') }}", {
+                            _token: "{{ csrf_token() }}",
+                            prize_id: currentPrizeId,
+                            old_winner_id: currentWinnerId
+                        });
+
+                        // ✅ Step 4: Reveal new winner after 4 seconds animation
                         setTimeout(() => {
-                            $.post("{{ route('raffle.redraw') }}", {
-                                _token: "{{ csrf_token() }}",
-                                prize_id: currentPrizeId,
-                                old_winner_id: currentWinnerId
-                            }, function(response) {
-                                // Stop rolling and show new winner
+                            redrawRequest.done(function(response) {
                                 stopRolling(response.winner, response.prize);
+
+                                let districtText = [
+                                    response.winner.district_name,
+                                    response.winner.municipality
+                                ].filter(Boolean).join(' - ') || 'N/A';
 
                                 Swal.fire({
                                     icon: 'success',
                                     title: '🎉 Winner Redrawn! 🎉',
                                     html: `
-                                <h2><strong>${response.winner.full_name}</strong></h2>
-                                ${response.winner.designation ? `<span>${response.winner.designation}</span>` : ''}<br>
-                                <span>${response.winner.school_office}</span><br>
-                                <span>${response.winner.district_division}</span>
+                                <h2 class="text-primary mt-2"><strong>${response.winner.school_name}</strong></h2>
+                                <span class="text-dark font-weight-bold">
+                                    <i class="fas fa-map-marker-alt text-danger me-1"></i>${districtText}
+                                </span><br>
+                                ${response.winner.school_office ? `<small class="text-muted">Office: ${response.winner.school_office}</small><br>` : ''}
                                 <hr>
-                                <span><b>Prize:</b> <span class="badge badge-success">${response.prize.name}</span></span>
+                                <span><b>Prize:</b> <span class="badge badge-success px-3 py-2">${response.prize.name}</span></span>
                             `,
                                     confirmButtonColor: '#003399'
                                 });
 
-                                // ✅ Update current winner IDs
+                                // ✅ Update current state variables
                                 currentWinnerId = response.winner.id;
                                 currentPrizeId = response.prize.id;
 
-                                // ✅ Reload recent winners
+                                // ✅ Refresh recent winners list
                                 loadRecentWinners();
+                                $btn.prop("disabled", false).text("Redraw Winner");
+
                             }).fail(function(xhr) {
-                                clearInterval(rollingInterval);
-                                stopAllSounds();
+                                if (typeof rollingInterval !== 'undefined') {
+                                    clearInterval(rollingInterval);
+                                }
+                                if (typeof stopAllSounds === 'function') {
+                                    stopAllSounds();
+                                }
                                 $('#rolling').hide();
+
+                                let errorMsg = xhr.responseJSON && xhr.responseJSON
+                                    .error ?
+                                    xhr.responseJSON.error :
+                                    'Failed to redraw winner.';
 
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Redraw Failed',
-                                    text: xhr.responseJSON.error,
+                                    text: errorMsg,
                                     confirmButtonColor: '#d33'
                                 });
+
+                                $btn.prop("disabled", false).text("Redraw Winner");
                             });
-                        }, 5000);
+                        }, 4000); // 4-second delay
+                    }).fail(function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Request Failed',
+                            text: 'Unable to fetch eligible schools list.',
+                            confirmButtonColor: '#d33'
+                        });
+                        $btn.prop("disabled", false).text("Redraw Winner");
                     });
 
                 }

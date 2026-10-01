@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\PreRegistrationController;
 use App\Http\Controllers\RaffleDrawController;
+use App\Http\Controllers\SchoolRaffleController;
 use App\Http\Controllers\WinnerController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Auth;
@@ -103,6 +104,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('attendance/store', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/certificate/{attendance}', [CertificateController::class, 'generate'])->name('certificate.generate');
 });
+Route::post('/raffle/school-redraw', [SchoolRaffleController::class, 'redrawWinner'])->name('raffle.school.redraw');
+Route::get('/schools/eligible-list', [SchoolRaffleController::class, 'getEligibleSchools'])->name('schools.eligibleList');
+Route::get('/raffle/school-live', [SchoolRaffleController::class, 'liveDraw'])->name('raffle.school.live');
+Route::post('/raffle/school-draw', [SchoolRaffleController::class, 'drawWinner'])->name('raffle.school.draw');
+Route::get('/raffle/school-recent-winners', [SchoolRaffleController::class, 'getRecentWinners'])->name('raffle.school.recentWinners');
+
+
 
 
 require __DIR__ . '/auth.php';

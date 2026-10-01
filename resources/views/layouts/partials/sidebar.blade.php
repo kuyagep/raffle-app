@@ -29,6 +29,12 @@
                 <span>Participants</span>
             </a>
         </li>
+        <li class="nav-item {{ request()->routeIs('admin.schools.*') ? 'active' : '' }}">
+            <a class="nav-link " href="{{ route('admin.schools.index') }}">
+                <i class="fas fa-users"></i>
+                <span>Schools</span>
+            </a>
+        </li>
         @if (auth()->user()->role === 'superadmin')
             <li class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                 <a class="nav-link " href="{{ route('admin.users.index') }}">
@@ -62,6 +68,12 @@
             <a class="nav-link" href="{{ route('admin.winners.index') }}">
                 <i class="fas fa-trophy"></i>
                 <span>Winners</span>
+            </a>
+        </li>
+        <li class="nav-item {{ request()->routeIs('admin.school-winners.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin.school-winners.index') }}">
+                <i class="fas fa-award"></i>
+                <span>School Winners</span>
             </a>
         </li>
     @endif

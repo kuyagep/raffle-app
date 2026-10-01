@@ -64,15 +64,9 @@ class RaffleDrawController extends Controller
 
     // Common winner selection logic
     private function pickWinner(Prize $prize)
-
     {
-
         $winner = null;
-
-
-
         DB::transaction(function () use ($prize, &$winner) {
-
             $winner = Participant::whereNotIn('id', function ($q) {
                 $q->select('participant_id')->from('raffle_winners');
             })->where('municipality', 'NOT LIKE', '%Division Office%')
@@ -84,15 +78,11 @@ class RaffleDrawController extends Controller
             if (!$winner) {
                 throw new \Exception('No eligible participants left.');
             }
-
-
             RaffleWinner::create([
                 'participant_id' => $winner->id,
                 'prize_id'       => $prize->id,
             ]);
         });
-
-
 
         if (!$winner) {
             return response()->json(['error' => 'No eligible participants left.'], 422);

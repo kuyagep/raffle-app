@@ -214,10 +214,10 @@
 </head>
 
 <body>
+    @yield('content')
     <div class="container">
 
-        <h1 class="mb-4"><a href="/raffle/school-live" class="text-white text-decoration-none fw-bold"><b>Grand Raffle
-                    Draw</b></a></h1>
+        <h1 class="mb-4"><b>Grand Raffle Draw</b></h1>
 
         <!-- Prize Selection -->
         <div class="form-group mb-5">
@@ -226,18 +226,16 @@
                 <option value="">-- Select Prize --</option>
                 @foreach ($prizes as $prize)
                     @php
-                        $claimed = $prize->school_raffle_winners_count ?? $prize->winners()->count();
-                        $remaining = max(0, $prize->quantity - $claimed);
+                        $remaining = $prize->quantity - $prize->winners()->count();
                     @endphp
                     @if ($remaining > 0)
                         <option value="{{ $prize->id }}">
-                            {{ $prize->name }} {{ $remaining == 0 ? '(Out of Stock)' : "(Remaining: {$remaining})" }}
+                            {{ $prize->name }} (Remaining: {{ $remaining }})
                         </option>
                     @endif
                 @endforeach
             </select>
         </div>
-
 
         <!-- Rolling Animation -->
         <div id="rolling" class="rolling mt-5 mb-5 text-uppercase">Press Start to Begin</div>
@@ -245,9 +243,8 @@
         <!-- Final Winner -->
         <h1 id="winner" class="winner mt-5"></h1>
 
-        <button id="startBtn" class="btn btn-lg bg-success text-white">Start Draw</button>
-        <button id="redrawBtn" class="btn bg-danger btn-lg d-none text-white">Redraw Prize</button>
-        <a href="/raffle/school-live" class="btn bg-secondary btn-lg d-none text-white">Switch</a>
+        <button id="startBtn" class="btn btn-lg bg-gradient-success text-white">Start Draw</button>
+        <button id="redrawBtn" class="btn bg-gradient-danger btn-lg d-none text-white">Redraw Prize</button>
 
         <!-- Recent Winners -->
         <div class="recent-winners mt-5 mb-5">
