@@ -12,7 +12,7 @@
                         Raffle Winners
                     </a>
                 </h1>
-                <p class="text-white small mb-0">2026 World Teachers' Day Grand Raffle Draw</p>
+                {{-- <p class="text-white small mb-0">Grand Raffle Draw</p> --}}
             </div>
 
             <!-- Prize Filter Bar -->
@@ -61,25 +61,23 @@
                                         </div> --}}
 
                                         <!-- Full Name -->
-                                        <h4 class="fw-bold text-dark mb-1  text-truncate text-uppercase"
-                                            title="{{ $winner->participant->full_name }}">
+                                        <h2 class="fw-bold text-dark mb-1   text-uppercase">
                                             <b>{{ $winner->participant->full_name }}</b>
-                                        </h4>
+                                        </h2>
 
                                         <!-- District / Division -->
-                                        <h6 class="text-truncate mb-1 text-dark">
-                                            <i class="fas fa-map-marker-alt text-danger mr-1"></i>
+                                        <h4 class="text-truncate mb-1 text-dark">
+
                                             {{ $winner->participant->district_division ?? 'N/A' }}
-                                        </h6>
+                                        </h4>
                                     </div>
 
                                     <!-- Prize Badge -->
-                                    <div class="pt-1 border-top mt-1">
-                                        <span class="badge bg-warning text-dark text-truncate w-100"
-                                            style="font-size: 0.7rem;" title="{{ $winner->prize->name ?? 'Prize' }}">
+                                    <h6 class="pt-1 border-top mt-1">
+                                        <span class="badge badge-success bg-success text-white" style="font-size: 12pt;">
                                             <i class="fas fa-gift mr-1"></i>{{ $winner->prize->name ?? 'Prize' }}
                                         </span>
-                                    </div>
+                                    </h6>
                                 </div>
                             </div>
                         </div>

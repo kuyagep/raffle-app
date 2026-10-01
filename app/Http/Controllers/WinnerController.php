@@ -43,7 +43,7 @@ class WinnerController extends Controller
         }
 
         // Paginate results (12 cards per page fits nicely in a 3-column grid)
-        $winners = $query->paginate(6)->withQueryString();
+        $winners = $query->paginate(4)->withQueryString();
 
         return view('pages.raffle.winners', compact('winners', 'allPrizes'));
     }

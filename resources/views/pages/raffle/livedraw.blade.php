@@ -216,7 +216,7 @@
 <body>
     <div class="container">
 
-        <h1 class="mb-4"><b>2026 World Teachers' Day Grand Raffle Draw</b></h1>
+        <h1 class="mb-4"><b>Grand Raffle Draw</b></h1>
 
         <!-- Prize Selection -->
         <div class="form-group mb-5">
@@ -261,22 +261,20 @@
                                 <div>
 
                                     <!-- Full Name (Uppercase) -->
-                                    <h6 class="fw-bold text-dark mb-1 lh-sm text-truncate small text-uppercase"
-                                        title="{{ $rw->participant->full_name }}">
+                                    <h4 class="fw-bold text-dark mb-1 text-truncate text-uppercase">
                                         <b>{{ $rw->participant->full_name }}</b>
-                                    </h6>
+                                    </h4>
 
                                     <!-- District / Division -->
-                                    <p class="text-muted text-truncate mb-1" style="font-size: 0.75rem;">
-                                        <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                    <h6 class="text-muted text-truncate mb-1">
                                         {{ $rw->participant->district_division ?? 'N/A' }}
-                                    </p>
+                                    </h6>
                                 </div>
 
                                 <!-- Prize Badge -->
                                 <div class="pt-1 border-top mt-1">
                                     <span class="badge badge-success bg-success text-white text-truncate "
-                                        style="font-size: 0.7rem;" title="{{ $rw->prize->name }}">
+                                        style="font-size: 12pt;">
                                         <i class="fas fa-gift mr-1"></i> {{ $rw->prize->name }}
                                     </span>
                                 </div>
@@ -430,19 +428,19 @@
                             <div>
 
 
-                                <h6 class="fw-bold text-dark mb-1 lh-sm text-truncate small text-uppercase"
-                                    title="${fullName}">
-                                    <b>${fullNameUpper}</b>
-                                </h6>
+                                <h4 class="fw-bold text-dark mb-1 text-truncate text-uppercase"
 
-                                <p class="text-muted text-truncate mb-1" style="font-size: 0.75rem;">
-                                    <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                    <b>${fullNameUpper}</b>
+                                </h4>
+
+                                <h6 class="text-muted text-truncate mb-1" >
+
                                     ${district}
-                                </p>
+                                </h6>
                             </div>
 
                             <div class="pt-1 border-top mt-1">
-                                <span class="badge badge-success bg-success text-white text-truncate " style="font-size: 0.7rem;" title="${prizeName}">
+                                <span class="badge badge-success bg-success text-white text-truncate " style="font-size: 12pt;"  >
                                     <i class="fas fa-gift mr-1"></i>${prizeName}
                                 </span>
                             </div>
