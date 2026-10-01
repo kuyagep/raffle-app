@@ -63,6 +63,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 Route::get('/raffle-winners', [WinnerController::class, 'winners'])->name('public.winners');
+Route::get('/school/raffle-winners', [WinnerController::class, 'schoolWinners'])->name('public.school.winners');
+
 
 Route::post('/events/{id}/join', [EventController::class, 'toggleJoin'])
     ->name('events.toggle-join');

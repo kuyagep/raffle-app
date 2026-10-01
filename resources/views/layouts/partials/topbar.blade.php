@@ -22,6 +22,18 @@
                     <span class="text-white d-none d-lg-inline">Raffle Winners</span>
                 </a>
             </li>
+            <li class="nav-item {{ request()->routeIs('raffle.school.live') ? 'active' : '' }}">
+                <a class="nav-link text-white" href="{{ route('raffle.school.live') }}" target="_blank">
+                    <i class="fas fa-random text-white-50 mr-1"></i>
+                    <span class="text-white d-none d-lg-inline">School Raffle</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->routeIs('public.school.winners') ? 'active' : '' }}">
+                <a class="nav-link text-white" href="{{ route('public.school.winners') }}" target="_blank">
+                    <i class="fas fa-trophy text-white-50 mr-1"></i>
+                    <span class="text-white d-none d-lg-inline">School Winners</span>
+                </a>
+            </li>
         @endif
         <div class="topbar-divider d-none d-sm-block border-left-light opacity-25"></div>
 
